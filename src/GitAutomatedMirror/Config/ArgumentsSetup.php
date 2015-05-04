@@ -5,7 +5,7 @@ use GitAutomatedMirror\Common;
 use GitAutomatedMirror\Type;
 use GetOptionKit;
 
-class Arguments {
+class ArgumentsSetup {
 
 	/**
 	 * @type GetOptionKit\OptionCollection

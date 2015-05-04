@@ -39,7 +39,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 			->method( 'add' )
 			->willReturn( $option_mock );
 
-		$testee = new Config\Arguments( $optionCollection, $attributeBuilder );
+		$testee = new Config\ArgumentsSetup( $optionCollection, $attributeBuilder );
 		$testee->registerDefaultArguments();
 	}
 
@@ -55,7 +55,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 		$optionCollection = $mockBuilder->getOptionCollectionMock();
 
 		$attribute = $mockBuilder->getTypeApplicationArgumentMock( $data );
-		$testee = new Config\Arguments( $optionCollection, $attributeBuilder );
+		$testee = new Config\ArgumentsSetup( $optionCollection, $attributeBuilder );
 
 		$this->assertEquals(
 			$expected,

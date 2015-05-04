@@ -19,7 +19,7 @@ class ArgumentsController {
 	private $optionCollection;
 
 	/**
-	 * @type Config\Arguments
+	 * @type Config\ArgumentsSetup
 	 */
 	private $arguments;
 
@@ -29,12 +29,12 @@ class ArgumentsController {
 	private $parser;
 
 	/**
-	 * @param Config\Arguments              $arguments
+	 * @param Config\ArgumentsSetup              $arguments
 	 * @param GetOptionKit\OptionCollection $optionCollection
 	 * @param GetOptionKit\OptionParser     $parser
 	 */
 	public function __construct(
-		Config\Arguments $arguments,
+		Config\ArgumentsSetup $arguments,
 		GetOptionKit\OptionCollection $optionCollection,
 		GetOptionKit\OptionParser $parser
 	) {

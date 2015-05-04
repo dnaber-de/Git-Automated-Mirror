@@ -7,7 +7,7 @@ use GetOptionKit;
 /**
  * Class ArgumentsValidator
  *
- * Validates the given Arguments
+ * Validates the given ArgumentsSetup
  *
  * @package GitAutomatedMirror\App
  */
@@ -23,15 +23,15 @@ class ArgumentsValidator {
 	/**
 	 * The arguments definition of the application
 	 *
-	 * @type Config\Arguments
+	 * @type Config\ArgumentsSetup
 	 */
 	private $arguments;
 
 	/**
 	 * @param GetOptionKit\OptionResult $optionResult
-	 * @param Config\Arguments $arguments
+	 * @param Config\ArgumentsSetup $arguments
 	 */
-	public function __construct( GetOptionKit\OptionResult $optionResult, Config\Arguments $arguments ) {
+	public function __construct( GetOptionKit\OptionResult $optionResult, Config\ArgumentsSetup $arguments ) {
 
 		$this->optionResult = $optionResult;
 	}
