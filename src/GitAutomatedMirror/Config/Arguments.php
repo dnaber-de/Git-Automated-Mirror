@@ -36,6 +36,10 @@ class Arguments {
 		$this->createArguments();
 	}
 
+	/**
+	 * register the application arguments
+	 *
+	 */
 	public function registerDefaultArguments() {
 
 		foreach ( $this->definedArguments as $arg ) {
@@ -47,41 +51,44 @@ class Arguments {
 		}
 	}
 
-
+	/**
+	 * provide the structure for each
+	 * of the application arguments
+	 */
 	private function createArguments() {
 
 		$definedArgumentsStructure = [
 			[
 				'name'        => 'help',
 				'type'        => 'string',
-				'isRequired'    => FALSE,
+				'isRequired'  => FALSE,
 				'shortName'   => 'h',
 				'description' => 'Print this help message.'
 			],
 			[
 				'name'        => 'dir',
 				'type'        => 'string',
-				'isRequired'    => TRUE,
+				'isRequired'  => TRUE,
 				'shortName'   => 'd',
 				'description' => 'Directory of the git repository.'
 			],
 			[
 				'name'        => 'remote-source',
 				'type'        => 'string',
-				'isRequired'    => TRUE,
+				'isRequired'  => TRUE,
 				'shortName'   => '',
 				'description' => 'Remote of the source repo. Typically "origin".'
 			],
 			[
 				'name'        => 'remote-mirror',
 				'type'        => 'string',
-				'isRequired'    => TRUE,
+				'isRequired'  => TRUE,
 				'shortName'   => '',
 				'description' => 'Remote of the mirror repo.'
 			],
 		];
 
-		foreach ( $definedArgumentsStructure as $arg )
+		foreach ( $definedArgumentsStructure as $arg ) {
 			$this->definedArguments[ $arg[ 'name' ] ] = $this->argumentBuilder->buildArgument(
 				$arg[ 'name' ],
 				$arg[ 'type' ],
@@ -89,6 +96,7 @@ class Arguments {
 				$arg[ 'shortName' ],
 				$arg[ 'description' ]
 			);
+		}
 	}
 
 	/**

@@ -18,7 +18,8 @@ class MockBuilder {
 
 	/**
 	 * @param array $attributes
-	 * @return Type\ApplicationArgument
+	 * @type Type\ApplicationArgument
+	 * @return \PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function getTypeApplicationArgumentMock( Array $attributes = NULL ) {
 
@@ -50,21 +51,43 @@ class MockBuilder {
 	}
 
 	/**
-	 * @return GetOptionKit\OptionCollection
+	 * @type GetOptionKit\OptionCollection
+	 * @return \PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function getOptionCollectionMock() {
 
 		$class = 'GetOptionKit\OptionCollection';
-		$mock = $this->testCase->getMockBuilder( $class )
-			->disableOriginalConstructor()
-			->getMock();
 
-		return $mock;
+		return $this->getMockWithoutConstructor( $class );
 	}
 
+	/**
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
 	public function getCommonApplicationArgumentBuilderMock() {
 
 		$class = 'GitAutomatedMirror\Common\ApplicationArgumentBuilder';
+
+		return $this->getMockWithoutConstructor( $class );
+	}
+
+	/**
+	 * @type GetOptionKit\Option
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getOptionKitOptionMock() {
+
+		$class = 'GetOptionKit\Option';
+
+		return $this->getMockWithoutConstructor( $class );
+	}
+
+	/**
+	 * @param string $class
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getMockWithoutConstructor( $class ) {
+
 		$mock = $this->testCase->getMockBuilder( $class )
 			->disableOriginalConstructor()
 			->getMock();
