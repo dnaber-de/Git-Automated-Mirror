@@ -1,6 +1,8 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\App;
+use GitAutomatedMirror\Argument\ArgumentsController;
+use GitAutomatedMirror\Argument\ArgumentsValidator;
 use GitAutomatedMirror\Config;
 use GetOptionKit;
 use PHPGit;
@@ -46,7 +48,7 @@ class GitAutomatedMirror {
 		$this->di_container->addRule( 'GetOptionKit\OptionCollection', $optionCollectionRule );
 
 		/* @type ArgumentsController $argController */
-		$argController = $this->di_container->create( __NAMESPACE__ . '\ArgumentsController' );
+		$argController = $this->di_container->create( 'GitAutomatedMirror\Argument\ArgumentsController' );
 		/* @type GetOptionKit\OptionCollection $argument_specs */
 		$argumentsSpec = $this->di_container->create( 'GetOptionKit\OptionCollection' );
 
@@ -56,10 +58,10 @@ class GitAutomatedMirror {
 		$optionResultRule = new Dice\Rule;
 		$optionCollectionRule->shared = TRUE;
 		$optionResultRule->substitutions[ 'GetOptionKit\OptionResult' ] = $optionResults;
-		$this->di_container->addRule( __NAMESPACE__ . '\ArgumentsValidator', $optionResultRule );
+		$this->di_container->addRule( 'GitAutomatedMirror\Argument\ArgumentsValidator', $optionResultRule );
 		$this->di_container->addRule(  __NAMESPACE__ . '\GitMirrorArguments', $optionResultRule );
 		/** @type  ArgumentsValidator $argValidator */
-		$argValidator = $this->di_container->create( __NAMESPACE__ . '\ArgumentsValidator' );
+		$argValidator = $this->di_container->create( 'GitAutomatedMirror\Argument\ArgumentsValidator' );
 
 		/* closing the application if the help argument is passed or there are no arguments at all */
 		if ( $optionResults->has( 'help' ) || ! $argValidator->isValidRequest() ) {
@@ -70,7 +72,7 @@ class GitAutomatedMirror {
 
 		/** @type GitMirrorArguments $appArguments */
 		$appArguments = $this->di_container->create( __NAMESPACE__ . '\GitMirrorArguments' );
-		var_dump( $appArguments->getRepository() );exit;
+		#var_dump( $appArguments->getRepository(), $appArguments->getRemoteSource(), $appArguments->getRemoteMirror() );exit;
 		$git = new PHPGit\Git();
 		$git->setRepository( '/var/www/projects/php/requisite' );
 		$branches = $git->branch( [ 'all' => TRUE ] );

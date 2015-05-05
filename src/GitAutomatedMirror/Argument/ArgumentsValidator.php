@@ -1,6 +1,6 @@
 <?php # -*- coding: utf-8 -*-
 
-namespace GitAutomatedMirror\App;
+namespace GitAutomatedMirror\Argument;
 use GitAutomatedMirror\Config;
 use GitAutomatedMirror\Type;
 use GetOptionKit;
