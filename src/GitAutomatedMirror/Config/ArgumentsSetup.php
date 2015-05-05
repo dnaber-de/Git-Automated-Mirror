@@ -119,4 +119,14 @@ class ArgumentsSetup {
 
 		return $name;
 	}
-} 
+
+	/**
+	 * Returns an array of Type\ApplicationArgument-s
+	 *
+	 * @return array
+	 */
+	public function getDefinedArguments() {
+
+		return $this->definedArguments;
+	}
+}

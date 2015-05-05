@@ -43,6 +43,9 @@ class ArgumentsController {
 		$this->parser           = $parser;
 	}
 
+	/**
+	 * register the arguments using Config\ArgumentsSetup::registerDefaultArguments
+	 */
 	public function registerArguments() {
 
 		$this->arguments->registerDefaultArguments();

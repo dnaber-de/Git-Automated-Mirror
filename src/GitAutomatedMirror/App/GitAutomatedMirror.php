@@ -55,21 +55,27 @@ class GitAutomatedMirror {
 		/* Pass the GetOptionKit\OptionResult to other instances */
 		$optionResultRule = new Dice\Rule;
 		$optionCollectionRule->shared = TRUE;
-		$optionCollectionRule->substitutions[ 'GetOptionKit\OptionResult' ] = $optionResults;
-		$this->di_container->addRule( 'GetOptionKit\OptionResult', $optionResultRule );
+		$optionResultRule->substitutions[ 'GetOptionKit\OptionResult' ] = $optionResults;
+		$this->di_container->addRule( __NAMESPACE__ . '\ArgumentsValidator', $optionResultRule );
+		$this->di_container->addRule(  __NAMESPACE__ . '\GitMirrorArguments', $optionResultRule );
+		/** @type  ArgumentsValidator $argValidator */
+		$argValidator = $this->di_container->create( __NAMESPACE__ . '\ArgumentsValidator' );
 
 		/* closing the application if the help argument is passed or there are no arguments at all */
-		if ( $optionResults->has( 'help' ) || 2 > count( $optionResults->arguments ) ) {
+		if ( $optionResults->has( 'help' ) || ! $argValidator->isValidRequest() ) {
 			$printer = new GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
 			echo $printer->render( $argumentsSpec );
 			return;
 		}
 
+		/** @type GitMirrorArguments $appArguments */
+		$appArguments = $this->di_container->create( __NAMESPACE__ . '\GitMirrorArguments' );
+		var_dump( $appArguments->getRepository() );exit;
 		$git = new PHPGit\Git();
 		$git->setRepository( '/var/www/projects/php/requisite' );
 		$branches = $git->branch( [ 'all' => TRUE ] );
 
-		var_dump( $branches );
+		#var_dump( $branches );
 		echo "end\n";
 	}
 
