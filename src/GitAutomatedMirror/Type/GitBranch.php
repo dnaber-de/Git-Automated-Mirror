@@ -13,7 +13,7 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 	/**
 	 * @type bool
 	 */
-	private $is_local = FALSE;
+	private $isLocal = FALSE;
 
 	/**
 	 * @type array
@@ -22,13 +22,13 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 
 	/**
 	 * @param string $name
-	 * @param bool $is_local
+	 * @param bool $isLocal
 	 * @param array $remotes
 	 */
-	public function __construct( $name, $is_local, Array $remotes = NULL ) {
+	public function __construct( $name, $isLocal = FALSE, Array $remotes = NULL ) {
 
 		$this->name     = $name;
-		$this->is_local = (bool) $is_local;
+		$this->isLocal = (bool) $isLocal;
 		if ( $remotes )
 			$this->remotes = $remotes;
 	}
@@ -38,7 +38,7 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 	 */
 	public function isLocal() {
 
-		return $this->is_local;
+		return $this->isLocal;
 	}
 
 	/**
@@ -64,4 +64,39 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 
 		return $this->name;
 	}
-} 
+
+	/**
+	 * @param bool $isLocal
+	 * @return void
+	 */
+	public function setIsLocal( $isLocal ) {
+
+		$this->isLocal = (bool) $isLocal;
+	}
+
+	/**
+	 * @param string $remote
+	 * @return void
+	 */
+	public function pushRemote( $remote ) {
+
+		if ( in_array( $remote, $this->remotes ) )
+			return;
+
+		$this->remotes[] = $remote;
+	}
+
+	/**
+	 * @param string $remote
+	 * @return void
+	 */
+	public function popRemote( $remote ) {
+
+		$key = array_search( $remote, $this->remotes );
+		if ( FALSE === $key )
+			return;
+
+		unset( $this->remotes[ $key ] );
+	}
+
+}

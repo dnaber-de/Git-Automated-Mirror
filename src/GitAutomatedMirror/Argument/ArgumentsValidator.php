@@ -4,6 +4,7 @@ namespace GitAutomatedMirror\Argument;
 use GitAutomatedMirror\Config;
 use GitAutomatedMirror\Type;
 use GetOptionKit;
+use PHPGit;
 
 /**
  * Class ArgumentsValidator
@@ -19,7 +20,7 @@ class ArgumentsValidator {
 	 *
 	 * @type GetOptionKit\OptionResult
 	 */
-	public $optionResult;
+	private $optionResults;
 
 	/**
 	 * The arguments definition of the application
@@ -29,13 +30,24 @@ class ArgumentsValidator {
 	private $arguments;
 
 	/**
-	 * @param GetOptionKit\OptionResult $optionResult
-	 * @param Config\ArgumentsSetup $arguments
+	 * @type PHPGit\Git
 	 */
-	public function __construct( GetOptionKit\OptionResult $optionResult, Config\ArgumentsSetup $arguments ) {
+	public $git;
 
-		$this->optionResult = $optionResult;
+	/**
+	 * @param GetOptionKit\OptionResult $optionResults
+	 * @param Config\ArgumentsSetup     $arguments
+	 * @param PHPGit\Git                $git
+	 */
+	public function __construct(
+		GetOptionKit\OptionResult $optionResults,
+		Config\ArgumentsSetup $arguments,
+		PHPGit\Git $git
+	) {
+
+		$this->optionResults = $optionResults;
 		$this->arguments    = $arguments;
+		$this->git          = $git;
 	}
 
 	/**
@@ -53,13 +65,40 @@ class ArgumentsValidator {
 			if ( ! $arg->isRequired() )
 				continue;
 
-			if ( $this->optionResult->has( $arg->getName() ) )
+			if ( $this->optionResults->has( $arg->getName() ) )
 				continue;
 
 			$missingArguments[] = $arg;
 		}
 
 		return $missingArguments;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function remotesExists() {
+
+		return [] === $this->getInvalidRemotes();
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getInvalidRemotes() {
+
+		$origin  = $this->optionResults[ 'remote-source' ]->value;
+		$mirror  = $this->optionResults[ 'remote-mirror' ]->value;
+		$remotes = $this->git->remote();
+		$missing = [];
+
+		if ( ! isset( $remotes[ $origin ] ) )
+			$missing[] = 'remote-source';
+
+		if ( ! isset( $remotes[ $mirror ] ) )
+			$missing[] = 'remote-mirror';
+
+		return $missing;
 	}
 
 	/**

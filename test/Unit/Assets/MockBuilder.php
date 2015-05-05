@@ -3,6 +3,7 @@
 namespace GitAutomatedMirror\Test\Unit\Assets;
 use GitAutomatedMirror\Type;
 use GetOptionKit;
+use PHPGit;
 
 class MockBuilder {
 
@@ -83,15 +84,30 @@ class MockBuilder {
 	}
 
 	/**
-	 * @param string $class
+	 * @type PHPGit\Git
+	 * @param Array $methods
 	 * @return \PHPUnit_Framework_MockObject_MockObject
 	 */
-	public function getMockWithoutConstructor( $class ) {
+	public function getPhpGitMock( Array $methods = NULL ) {
 
-		$mock = $this->testCase->getMockBuilder( $class )
-			->disableOriginalConstructor()
-			->getMock();
+		$class = 'PHPGit\Git';
 
-		return $mock;
+		return $this->getMockWithoutConstructor( $class, $methods );
+	}
+
+	/**
+	 * @param string $class
+	 * @param Array $methods
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getMockWithoutConstructor( $class, Array $methods = NULL ) {
+
+		$mockBuilder = $this->testCase->getMockBuilder( $class )
+			->disableOriginalConstructor();
+
+		if ( $methods )
+			$mockBuilder->setMethods( $methods );
+
+		return $mockBuilder->getMock();
 	}
 } 

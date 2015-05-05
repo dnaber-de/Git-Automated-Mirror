@@ -18,4 +18,22 @@ interface BranchInterface {
 	 * @return string
 	 */
 	public function getName();
+
+	/**
+	 * @param bool $isLocal
+	 * @return void
+	 */
+	public function setIsLocal( $isLocal );
+
+	/**
+	 * @param string $remote
+	 * @return void
+	 */
+	public function pushRemote( $remote );
+
+	/**
+	 * @param string $remote
+	 * @return void
+	 */
+	public function popRemote( $remote );
 }

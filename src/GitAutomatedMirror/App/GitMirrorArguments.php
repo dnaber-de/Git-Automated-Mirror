@@ -3,6 +3,7 @@
 namespace GitAutomatedMirror\App;
 use GitAutomatedMirror\Type;
 use GetOptionKit;
+use PHPGit;
 
 class GitMirrorArguments {
 
@@ -12,11 +13,18 @@ class GitMirrorArguments {
 	private $optionResults;
 
 	/**
-	 * @param GetOptionKit\OptionResult $optionResults
+	 * @type PHPGit\Git
 	 */
-	public function __construct( GetOptionKit\OptionResult $optionResults ) {
+	private $git;
+
+	/**
+	 * @param GetOptionKit\OptionResult $optionResults
+	 * @param PHPGit\Git                $git
+	 */
+	public function __construct( GetOptionKit\OptionResult $optionResults, PHPGit\Git $git ) {
 
 		$this->optionResults = $optionResults;
+		$this->git = $git;
 	}
 
 	/**
@@ -35,7 +43,13 @@ class GitMirrorArguments {
 	public function getRemoteSource() {
 
 		$remote = $this->optionResults[ 'remote-source' ]->value;
-		return new Type\GitRemote( $remote, '' );
+		$remoteInfo = $this->git->remote();
+
+		return new Type\GitRemote(
+			$remote,
+			$remoteInfo[ $remote ][ 'push' ],
+			$remoteInfo[ $remote ][ 'fetch' ]
+		);
 	}
 
 	/**
@@ -44,6 +58,12 @@ class GitMirrorArguments {
 	public function getRemoteMirror() {
 
 		$remote = $this->optionResults[ 'remote-mirror' ]->value;
-		return new Type\GitRemote( $remote, '' );
+		$remoteInfo = $this->git->remote();
+
+		return new Type\GitRemote(
+			$remote,
+			$remoteInfo[ $remote ][ 'push' ],
+			$remoteInfo[ $remote ][ 'fetch' ]
+		);
 	}
 } 

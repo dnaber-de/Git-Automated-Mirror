@@ -11,4 +11,5 @@ $loader->load_source();
 
 $app = new App\GitAutomatedMirror( new \Dice\Dice );
 $app->run( $GLOBALS[ 'argv' ] );
+$app->shutdown();
 

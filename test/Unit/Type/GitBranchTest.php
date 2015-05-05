@@ -35,6 +35,40 @@ class GitBranchTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function testSetters() {
+
+		$testee = new Type\GitBranch( 'master', TRUE, [ 'origin' ] );
+
+		$this->assertEquals(
+			'master',
+			$testee->getName()
+		);
+
+		$this->assertTrue( $testee->isLocal() );
+		$testee->setIsLocal( TRUE );
+		$this->assertTrue( $testee->isLocal() );
+		$testee->setIsLocal( FALSE );
+		$this->assertFalse( $testee->isLocal() );
+
+		$this->assertEquals(
+			[ 'origin' ],
+			$testee->getRemotes()
+		);
+
+		$testee->popRemote( 'origin' );
+		$this->assertEquals(
+			[],
+			$testee->getRemotes()
+		);
+
+		$testee->pushRemote( 'mirror' );
+		$testee->pushRemote( 'origin' );
+		$this->assertEquals(
+			[ 'mirror', 'origin' ],
+			array_values( $testee->getRemotes() )
+		);
+	}
+
 	/**
 	 * @see testGetters
 	 * @return array
