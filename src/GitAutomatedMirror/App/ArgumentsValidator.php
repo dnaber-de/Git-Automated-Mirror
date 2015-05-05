@@ -2,6 +2,7 @@
 
 namespace GitAutomatedMirror\App;
 use GitAutomatedMirror\Config;
+use GitAutomatedMirror\Type;
 use GetOptionKit;
 
 /**
@@ -18,7 +19,7 @@ class ArgumentsValidator {
 	 *
 	 * @type GetOptionKit\OptionResult
 	 */
-	private $optionResult;
+	public $optionResult;
 
 	/**
 	 * The arguments definition of the application
@@ -34,10 +35,38 @@ class ArgumentsValidator {
 	public function __construct( GetOptionKit\OptionResult $optionResult, Config\ArgumentsSetup $arguments ) {
 
 		$this->optionResult = $optionResult;
+		$this->arguments    = $arguments;
 	}
 
+	/**
+	 * Return an array of Type\ApplicationArgument-s
+	 * if any is missing
+	 *
+	 * @return array
+	 */
 	public function getMissingArguments() {
 
+		$missingArguments = [];
+		$argSpecification = $this->arguments->getDefinedArguments();
+		foreach ( $argSpecification as $arg ) {
+			/* @type Type\ApplicationArgument $arg */
+			if ( ! $arg->isRequired() )
+				continue;
 
+			if ( $this->optionResult->has( $arg->getName() ) )
+				continue;
+
+			$missingArguments[] = $arg;
+		}
+
+		return $missingArguments;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isValidRequest() {
+
+		return [] === $this->getMissingArguments();
 	}
 } 
