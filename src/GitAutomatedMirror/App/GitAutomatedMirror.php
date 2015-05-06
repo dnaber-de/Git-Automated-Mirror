@@ -3,6 +3,8 @@
 namespace GitAutomatedMirror\App;
 use GitAutomatedMirror\Config;
 use GitAutomatedMirror\Git;
+use GitAutomatedMirror\Type;
+use GitAutomatedMirror\Argument;
 use GetOptionKit;
 use PHPGit;
 use Dice;
@@ -54,7 +56,7 @@ class GitAutomatedMirror {
 		/* @type PHPGit\Git $git */
 		$git = $this->di_container->create( 'PHPGit\Git' );
 
-		/* @type ArgumentsController $argController */
+		/* @type Argument\ArgumentsController $argController */
 		$argController = $this->di_container->create( 'GitAutomatedMirror\Argument\ArgumentsController' );
 
 		/* @type GetOptionKit\OptionCollection $argument_specs */
@@ -74,7 +76,7 @@ class GitAutomatedMirror {
 		$this->di_container->addRule(  __NAMESPACE__ . '\GitMirrorArguments', $optionResultRule );
 
 		// validating the arguments
-		/** @type  ArgumentsValidator $argValidator */
+		/** @type  Argument\ArgumentsValidator $argValidator */
 		$argValidator = $this->di_container->create( 'GitAutomatedMirror\Argument\ArgumentsValidator' );
 
 		// closing the application if the help argument is passed or there are no arguments at all
@@ -103,7 +105,17 @@ class GitAutomatedMirror {
 		$branchReader->buildBranches();
 		$branches = $branchReader->getBranches();
 
-		var_dump( $branches );
+		$sourceRemote = $appArguments->getRemoteSource();
+		$mirrorRemote = $appArguments->getRemoteMirror();
+
+		$ignoredBranches = new Git\IgnoredBranches( $branchReader );
+		$branchesSynchronizer = new Git\BranchsSynchronizer( $git, $branchReader );
+		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )
+			$branchesSynchronizer->pushIgnoredBranch( $branch );
+
+		# ignore some branches like remotes/origin/HEAD
+		$branchesSynchronizer->pushIgnoredBranch( new Type\GitBranch( 'HEAD', FALSE ) );
+		$branchesSynchronizer->synchronizeBranches( $sourceRemote, $mirrorRemote );
 
 		/**
 		 * process logic:
