@@ -145,7 +145,9 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 				'master' => [
 					'isLocal' => TRUE,
 					'name'    => 'master',
-					'remotes' => [ 'origin' ]
+					'remotes' => [
+						'origin' => 'remotes/origin/master'
+					]
 				]
 			]
 		];
@@ -184,12 +186,16 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 				'master' => [
 					'isLocal' => TRUE,
 					'name'    => 'master',
-					'remotes' => [ 'origin' ]
+					'remotes' => [
+						'origin' => 'remotes/origin/master'
+					]
 				],
 				'1.1-branch' => [
 					'isLocal' => FALSE,
 					'name'    => '1.1-branch',
-					'remotes' => [ 'mirror' ]
+					'remotes' => [
+						'mirror'  => 'remotes/mirror/1.1-branch'
+					]
 				],
 				'local-dev' => [
 					'isLocal' => TRUE,
@@ -227,7 +233,10 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 				'master' => [
 					'isLocal' => TRUE,
 					'name'    => 'master',
-					'remotes' => [ 'origin', 'mirror' ]
+					'remotes' => [
+						'origin' => 'remotes/origin/master',
+						'mirror' => 'remotes/mirror/master'
+					]
 				]
 			]
 		];

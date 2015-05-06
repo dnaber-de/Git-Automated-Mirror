@@ -27,9 +27,10 @@ interface BranchInterface {
 
 	/**
 	 * @param string $remote
+	 * @param string $fullRef (Optional)
 	 * @return void
 	 */
-	public function pushRemote( $remote );
+	public function pushRemote( $remote, $fullRef = '' );
 
 	/**
 	 * @param string $remote

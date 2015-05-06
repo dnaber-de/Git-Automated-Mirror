@@ -57,7 +57,7 @@ class BranchReader {
 		if ( empty( $branchInfo[ 'remote' ] ) )
 			$this->branches[ $branchName ]->setIsLocal( TRUE );
 		else
-			$this->branches[ $branchName ]->pushRemote( $branchInfo[ 'remote' ] );
+			$this->branches[ $branchName ]->pushRemote( $branchInfo[ 'remote' ], $rawBranch[ 'name' ] );
 	}
 
 	/**

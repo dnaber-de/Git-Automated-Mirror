@@ -37,7 +37,7 @@ class GitBranchTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSetters() {
 
-		$testee = new Type\GitBranch( 'master', TRUE, [ 'origin' ] );
+		$testee = new Type\GitBranch( 'master', TRUE, [ 'origin' => 'remotes/origin/master' ] );
 
 		$this->assertEquals(
 			'master',
@@ -51,7 +51,7 @@ class GitBranchTest extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse( $testee->isLocal() );
 
 		$this->assertEquals(
-			[ 'origin' ],
+			[ 'origin' => 'remotes/origin/master' ],
 			$testee->getRemotes()
 		);
 
@@ -62,10 +62,10 @@ class GitBranchTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$testee->pushRemote( 'mirror' );
-		$testee->pushRemote( 'origin' );
+		$testee->pushRemote( 'origin', 'remotes/origin/master' );
 		$this->assertEquals(
-			[ 'mirror', 'origin' ],
-			array_values( $testee->getRemotes() )
+			[ 'mirror' => 'mirror', 'origin' => 'remotes/origin/master' ],
+			$testee->getRemotes()
 		);
 	}
 

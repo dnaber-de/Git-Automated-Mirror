@@ -76,14 +76,18 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 
 	/**
 	 * @param string $remote
+	 * @param string $fullRef (Optional)
 	 * @return void
 	 */
-	public function pushRemote( $remote ) {
+	public function pushRemote( $remote, $fullRef = '' ) {
 
-		if ( in_array( $remote, $this->remotes ) )
+		if ( isset( $this->remotes[ $remote ] ) )
 			return;
 
-		$this->remotes[] = $remote;
+		if ( empty( $fullRef ) )
+			$fullRef = $remote;
+
+		$this->remotes[ $remote ] = $fullRef;
 	}
 
 	/**
@@ -92,11 +96,10 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 	 */
 	public function popRemote( $remote ) {
 
-		$key = array_search( $remote, $this->remotes );
-		if ( FALSE === $key )
+		if ( ! isset( $this->remotes[ $remote ] ) )
 			return;
 
-		unset( $this->remotes[ $key ] );
+		unset( $this->remotes[ $remote ] );
 	}
 
 }
