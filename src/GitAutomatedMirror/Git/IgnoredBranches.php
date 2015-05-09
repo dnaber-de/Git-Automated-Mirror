@@ -38,7 +38,6 @@ class IgnoredBranches {
 
 		$ignoredBranchNames = [
 			'HEAD',
-			'1.0-branch'
 		];
 
 		return in_array( $branch->getName(), $ignoredBranchNames );
