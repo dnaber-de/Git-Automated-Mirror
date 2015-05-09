@@ -2,6 +2,7 @@
 
 namespace GitAutomatedMirror\Git;
 use GitAutomatedMirror\Type;
+use League\Event;
 use PHPGit;
 
 class BranchsSynchronizer {
@@ -17,18 +18,29 @@ class BranchsSynchronizer {
 	private $branchReader;
 
 	/**
+	 * @type Event\Emitter
+	 */
+	private $eventEmitter;
+
+	/**
 	 * @type array
 	 */
 	private $ignoredBranches = [];
 
 	/**
-	 * @param PHPGit\Git   $git
-	 * @param BranchReader $branchReader
+	 * @param PHPGit\Git    $git
+	 * @param BranchReader  $branchReader
+	 * @param Event\Emitter $eventEmitter
 	 */
-	public function __construct( PHPGit\Git $git, BranchReader $branchReader ) {
+	public function __construct(
+		PHPGit\Git $git,
+		BranchReader $branchReader,
+		Event\Emitter $eventEmitter
+	) {
 
 		$this->git = $git;
 		$this->branchReader = $branchReader;
+		$this->eventEmitter = $eventEmitter;
 	}
 
 	/**
@@ -52,6 +64,13 @@ class BranchsSynchronizer {
 		unset( $this->ignoredBranches[ $key ] );
 	}
 
+	/**
+	 * the working horse
+	 * loops over all branches and deliver them to the mirror
+	 *
+	 * @param Type\GitRemote $from
+	 * @param Type\GitRemote $to
+	 */
 	public function synchronizeBranches( Type\GitRemote $from, Type\GitRemote $to ) {
 
 		foreach ( $this->branchReader->getBranches() as $branch ) {
@@ -59,6 +78,15 @@ class BranchsSynchronizer {
 				continue;
 			$this->synchronizeSingleBranch( $branch, $from, $to );
 		}
+		$this->eventEmitter->emit(
+			'git.synchronize.done',
+			[
+				'gitClient'    => $this->git,
+				'branchReader' => $this->branchReader,
+				'fromRemote'   => $from,
+				'toRemote'     => $to
+			]
+		);
 	}
 
 	/**
@@ -75,6 +103,16 @@ class BranchsSynchronizer {
 		}
 
 		$this->pullBranch( $branch, $from );
+		$this->eventEmitter->emit(
+			'git.synchronize.beforePushBranch',
+			[
+				'gitClient'    => $this->git,
+				'branchReader' => $this->branchReader,
+				'branch'       => $branch,
+				'fromRemote'   => $from,
+				'toRemote'     => $to
+			]
+		);
 		$this->pushBranch( $branch, $to );
 	}
 
