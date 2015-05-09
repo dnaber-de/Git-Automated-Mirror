@@ -117,8 +117,8 @@ class BranchsSynchronizer {
 		$commitMessage = "Pull {$branch->getName()}";
 
 		/**
-		 * a shorthand $this->git->pull() would lead
-		 * to a necessary merge we can not deal with,
+		 * a simple $this->git->pull() would lead
+		 * to a possibly necessary merge we can not deal with,
 		 * so we make a manual pull with fetch and merge
 		 *
 		 * @link http://longair.net/blog/2009/04/16/git-fetch-and-merge/
@@ -126,6 +126,10 @@ class BranchsSynchronizer {
 		$this->git->checkout( $branch->getName() );
 		$this->git->fetch( $from->getName() );
 
+		/**
+		 * a `$ git fetch` updates the branch origin/master (= $remoteRef)
+		 * after that, we merge the $remoteRef into the current branch
+		 */
 		$this->git->merge( $remoteRef, $commitMessage, [ 'strategy' => 'theirs', 'no-ff' => TRUE ] );
 		return TRUE;
 	}
