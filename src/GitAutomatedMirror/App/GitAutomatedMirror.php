@@ -100,35 +100,30 @@ class GitAutomatedMirror {
 			return;
 		}
 
-		/* @type Git\BranchReader $branchReader */
+		/**
+		 * The BranchReader gets us the branches from the repository
+		 *
+		 * @type Git\BranchReader $branchReader
+		 */
 		$branchReader = $this->di_container->create( 'GitAutomatedMirror\Git\BranchReader' );
 		$branchReader->buildBranches();
 		$branches = $branchReader->getBranches();
 
+
+		// the remote we want to pull from
 		$sourceRemote = $appArguments->getRemoteSource();
+		// the remote we want to push to
 		$mirrorRemote = $appArguments->getRemoteMirror();
 
 		$ignoredBranches = new Git\IgnoredBranches( $branchReader );
+
 		$branchesSynchronizer = new Git\BranchsSynchronizer( $git, $branchReader );
 		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )
 			$branchesSynchronizer->pushIgnoredBranch( $branch );
 
-		# ignore some branches like remotes/origin/HEAD
+		# ignore some branches like HEAD
 		$branchesSynchronizer->pushIgnoredBranch( new Type\GitBranch( 'HEAD', FALSE ) );
 		$branchesSynchronizer->synchronizeBranches( $sourceRemote, $mirrorRemote );
-
-		/**
-		 * process logic:
-		 *
-		 * 1. $ git fetch --all
-		 * 2. list all branches an parse them into local/remote-origin and remote-mirror
-		 * 3. track non-existing origin-branches locally
-		 *    $git->checkout->create( 'branch', 'remote/origin/branch' );
-		 * 4. for each local branch except the side-branch:
-		 *    + pull from origin
-		 *    + merge the local side-branch
-		 *    + push it to mirror
-		 */
 
 	}
 

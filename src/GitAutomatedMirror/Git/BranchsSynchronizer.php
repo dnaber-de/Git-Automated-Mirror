@@ -70,10 +70,8 @@ class BranchsSynchronizer {
 	 */
 	public function synchronizeSingleBranch( Type\GitBranch $branch, Type\GitRemote $from, Type\GitRemote $to ) {
 
-		$newBranch = FALSE;
 		if ( ! $branch->isLocal() ) {
 			$this->trackBranchLocally( $branch, $from );
-			$newBranch = TRUE;
 		}
 
 		$this->pullBranch( $branch, $from );
