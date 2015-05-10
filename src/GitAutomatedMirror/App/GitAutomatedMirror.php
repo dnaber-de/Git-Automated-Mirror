@@ -90,10 +90,13 @@ class GitAutomatedMirror {
 			return;
 		}
 
-		/** @type GitMirrorArguments $appArguments */
+		/**
+		 * Gives access to the script arguments
+		 *
+		 * @type GitMirrorArguments $appArguments
+		 */
 		$appArguments = $this->diContainer->create( __NAMESPACE__ . '\GitMirrorArguments' );
 
-		// now that are all required arguments exists, check the given remotes
 		$git->setRepository( $appArguments->getRepository() );
 
 		// now that are all required arguments exists, check the given remotes

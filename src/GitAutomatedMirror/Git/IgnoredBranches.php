@@ -3,6 +3,17 @@
 namespace GitAutomatedMirror\Git;
 use GitAutomatedMirror\Type;
 
+/**
+ * Class IgnoredBranches
+ *
+ * Todo:
+ * This class is ineffective as it has a fixed (static) list of
+ * ignored branch. Solution: exclude the list of ignored branches
+ * to an implementation of a simple BranchList interface which itself
+ * is a matter of the Config domain
+ *
+ * @package GitAutomatedMirror\Git
+ */
 class IgnoredBranches {
 
 	/**
