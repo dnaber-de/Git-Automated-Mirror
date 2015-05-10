@@ -8,8 +8,8 @@ require_once $base_dir . '/src/GitAutomatedMirror/Autoload/GitAutomatedMirrorLoa
 $loader = new Autoload\GitAutomatedMirrorLoader( $base_dir );
 $loader->load_dependencies();
 $loader->load_source();
-
-$app = new App\GitAutomatedMirror( new \Dice\Dice );
+$diContainer = new \Dice\Dice;
+$app = new App\GitAutomatedMirror( $diContainer, new Config\DiceConfigurator( $diContainer ) );
 $app->run( $GLOBALS[ 'argv' ] );
 $app->shutdown();
 

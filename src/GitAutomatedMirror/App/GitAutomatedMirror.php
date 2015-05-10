@@ -70,11 +70,14 @@ class GitAutomatedMirror {
 		/**
 		 * share the parsing results with the object tree
 		 */
-		$optionResultRule = new Dice\Rule;
-		$optionResultRule->shared = TRUE;
-		$optionResultRule->substitutions[ 'GetOptionKit\OptionResult' ] = $optionResults;
-		$this->diContainer->addRule( 'GitAutomatedMirror\Argument\ArgumentsValidator', $optionResultRule );
-		$this->diContainer->addRule(  __NAMESPACE__ . '\GitMirrorArguments', $optionResultRule );
+		$this->diceConfigurator->applySubstitution(
+			'GetOptionKit\OptionResult',
+			$optionResults,
+			[
+				'GitAutomatedMirror\Argument\ArgumentsValidator',
+				__NAMESPACE__ . '\GitMirrorArguments'
+			]
+		);
 
 		// validating the arguments
 		/** @type  Argument\ArgumentsValidator $argValidator */
