@@ -5,6 +5,7 @@ use GitAutomatedMirror\Config;
 use GitAutomatedMirror\Git;
 use GitAutomatedMirror\Type;
 use GitAutomatedMirror\Argument;
+use League\Event;
 use GetOptionKit;
 use PHPGit;
 use Dice;
@@ -14,7 +15,12 @@ class GitAutomatedMirror {
 	/**
 	 * @type Dice\Dice
 	 */
-	private $di_container;
+	private $diContainer;
+
+	/**
+	 * @type Config\DiceConfigurator
+	 */
+	private $diceConfigurator;
 
 	/**
 	 * actually passes parameters
@@ -24,11 +30,16 @@ class GitAutomatedMirror {
 	private $args;
 
 	/**
-	 * @param Dice\Dice $di_container
+	 * @param Dice\Dice               $diContainer
+	 * @param Config\DiceConfigurator $diceConfigurator
 	 */
-	public function __construct( Dice\Dice $di_container ) {
+	public function __construct(
+		Dice\Dice $diContainer,
+		Config\DiceConfigurator $diceConfigurator
+	) {
 
-		$this->di_container = $di_container;
+		$this->diContainer = $diContainer;
+		$this->diceConfigurator = $diceConfigurator;
 	}
 
 	/**
@@ -38,29 +49,19 @@ class GitAutomatedMirror {
 	 */
 	public function run( array $argv ) {
 
-		/**
-		 * setup Dice to share the OptionCollection instance
-		 * in the object tree
-		 *
-		 * @link https://r.je/dice.html
-		 */
-		$optionCollectionRule = new Dice\Rule;
-		$optionCollectionRule->shared = TRUE;
-		$this->di_container->addRule( 'GetOptionKit\OptionCollection', $optionCollectionRule );
-
-		// share the git object
-		$gitRule = new Dice\Rule;
-		$gitRule->shared = TRUE;
-		$this->di_container->addRule( 'PHPGit\Git', $gitRule );
+		$this->diceConfigurator->initialConfiguration();
 
 		/* @type PHPGit\Git $git */
-		$git = $this->di_container->create( 'PHPGit\Git' );
+		$git = $this->diContainer->create( 'PHPGit\Git' );
+
+		/* @type Event\Emitter $eventEmitter */
+		$eventEmitter = $this->diContainer->create( 'League\Event\Emitter' );
 
 		/* @type Argument\ArgumentsController $argController */
-		$argController = $this->di_container->create( 'GitAutomatedMirror\Argument\ArgumentsController' );
+		$argController = $this->diContainer->create( 'GitAutomatedMirror\Argument\ArgumentsController' );
 
 		/* @type GetOptionKit\OptionCollection $argument_specs */
-		$argumentsSpec = $this->di_container->create( 'GetOptionKit\OptionCollection' );
+		$argumentsSpec = $this->diContainer->create( 'GetOptionKit\OptionCollection' );
 
 		// Register arguments and parse $argv
 		$argController->registerArguments();
@@ -70,14 +71,14 @@ class GitAutomatedMirror {
 		 * share the parsing results with the object tree
 		 */
 		$optionResultRule = new Dice\Rule;
-		$optionCollectionRule->shared = TRUE;
+		$optionResultRule->shared = TRUE;
 		$optionResultRule->substitutions[ 'GetOptionKit\OptionResult' ] = $optionResults;
-		$this->di_container->addRule( 'GitAutomatedMirror\Argument\ArgumentsValidator', $optionResultRule );
-		$this->di_container->addRule(  __NAMESPACE__ . '\GitMirrorArguments', $optionResultRule );
+		$this->diContainer->addRule( 'GitAutomatedMirror\Argument\ArgumentsValidator', $optionResultRule );
+		$this->diContainer->addRule(  __NAMESPACE__ . '\GitMirrorArguments', $optionResultRule );
 
 		// validating the arguments
 		/** @type  Argument\ArgumentsValidator $argValidator */
-		$argValidator = $this->di_container->create( 'GitAutomatedMirror\Argument\ArgumentsValidator' );
+		$argValidator = $this->diContainer->create( 'GitAutomatedMirror\Argument\ArgumentsValidator' );
 
 		// closing the application if the help argument is passed or there are no arguments at all
 		if ( $optionResults->has( 'help' ) || ! $argValidator->isValidRequest() ) {
@@ -87,7 +88,7 @@ class GitAutomatedMirror {
 		}
 
 		/** @type GitMirrorArguments $appArguments */
-		$appArguments = $this->di_container->create( __NAMESPACE__ . '\GitMirrorArguments' );
+		$appArguments = $this->diContainer->create( __NAMESPACE__ . '\GitMirrorArguments' );
 
 		// now that are all required arguments exists, check the given remotes
 		$git->setRepository( $appArguments->getRepository() );
@@ -105,7 +106,7 @@ class GitAutomatedMirror {
 		 *
 		 * @type Git\BranchReader $branchReader
 		 */
-		$branchReader = $this->di_container->create( 'GitAutomatedMirror\Git\BranchReader' );
+		$branchReader = $this->diContainer->create( 'GitAutomatedMirror\Git\BranchReader' );
 		$branchReader->buildBranches();
 		$branches = $branchReader->getBranches();
 
@@ -117,7 +118,7 @@ class GitAutomatedMirror {
 
 		$ignoredBranches = new Git\IgnoredBranches( $branchReader );
 
-		$branchesSynchronizer = new Git\BranchsSynchronizer( $git, $branchReader );
+		$branchesSynchronizer = new Git\BranchsSynchronizer( $git, $branchReader, $eventEmitter );
 		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )
 			$branchesSynchronizer->pushIgnoredBranch( $branch );
 
