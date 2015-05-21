@@ -1,6 +1,6 @@
 <?php # -*- coding: utf-8 -*-
 
-namespace GitAutomatedMirror\Test\Unit\Assets;
+namespace GitAutomatedMirror\Test\Assets;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 

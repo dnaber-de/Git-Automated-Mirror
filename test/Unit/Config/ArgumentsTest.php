@@ -1,8 +1,7 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\Test\Unit\Config;
-use GitAutomatedMirror\App\GitAutomatedMirror;
-use GitAutomatedMirror\Test\Unit\Assets;
+use GitAutomatedMirror\Test\Assets;
 use GitAutomatedMirror\Config;
 
 class ArgumentsTest extends \PHPUnit_Framework_TestCase {

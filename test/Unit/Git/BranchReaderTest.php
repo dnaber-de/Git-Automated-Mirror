@@ -2,7 +2,7 @@
 
 namespace GitAutomatedMirror\Test\Unit\Git;
 use GitAutomatedMirror\Git;
-use GitAutomatedMirror\Test\Unit\Assets;
+use GitAutomatedMirror\Test\Assets;
 
 class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 

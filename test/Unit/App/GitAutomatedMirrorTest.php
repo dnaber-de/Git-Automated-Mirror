@@ -1,7 +1,7 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\Test\Unit\App;
-use GitAutomatedMirror\Test\Unit\Assets;
+use GitAutomatedMirror\Test\Assets;
 use GitAutomatedMirror\App;
 use GitAutomatedMirror\Config;
 use Dice;
