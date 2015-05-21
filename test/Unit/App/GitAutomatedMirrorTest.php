@@ -50,8 +50,79 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$testee->run( $argv );
+		$this->compareRepositories();
+		$this->organizer->updateSourceRepo();
 
-		$this->markTestIncomplete( 'Under construction…' );
+		$diContainer = new Dice\Dice;
+		$testee = new App\GitAutomatedMirror(
+			$diContainer,
+			new Config\DiceConfigurator( $diContainer )
+		);
+		$testee->run( $argv );
+		$this->compareRepositories();
+
+	}
+
+	private function compareRepositories() {
+
+		$repositories = $this->organizer->getRepositories();
+		// test the existence of all heads
+		// note: mirror is a bare repository
+		$mirrorHeadsDir = $repositories[ 'mirror' ][ 'path' ] . '/refs/heads';
+		$sourceHeadsDir = $repositories[ 'source' ][ 'path' ] . '/.git/refs/heads';
+		$mirrorTagsDir  = $repositories[ 'mirror' ][ 'path' ] . '/refs/tags';
+		$sourceTagsDir  = $repositories[ 'source' ][ 'path' ] . '/.git/refs/tags';
+
+		$this->assertTrue(
+			is_dir( $mirrorHeadsDir ),
+			'Directory mirror/refs/heads does not exist.'
+		);
+
+		$dirTools    = new Asset\DirectoryTools( $mirrorHeadsDir );
+		$mirrorHeadsFiles = $dirTools->getFiles();
+
+		$dirTools->cd( $sourceHeadsDir );
+		$sourceHeadsFiles = $dirTools->getFiles();
+
+		$dirTools->cd( $mirrorTagsDir );
+		$mirrorTagsFiles = $dirTools->getFiles();
+
+		$dirTools->cd( $sourceTagsDir );
+		$sourceTagsFiles = $dirTools->getFiles();
+
+		/**
+		 * each HEAD in the source must appear in the mirror
+		 * and each file should point to the same object
+		 */
+		foreach ( $sourceHeadsFiles as $fileName => $filePath ) {
+			$this->assertArrayHasKey(
+				$fileName,
+				$mirrorHeadsFiles,
+				"HEAD $fileName does not exist in mirror repo."
+			);
+
+			$this->assertFileEquals(
+				$filePath,
+				$mirrorHeadsFiles[ $fileName ]
+			);
+		}
+
+		/**
+		 * each Tag in the source must appear in the mirror
+		 * and each file should point to the same object
+		 */
+		foreach ( $sourceTagsFiles as $fileName => $filePath ) {
+			$this->assertArrayHasKey(
+				$fileName,
+				$mirrorTagsFiles,
+				"Tag $fileName does not exist in mirror repo."
+			);
+
+			$this->assertFileEquals(
+				$filePath,
+				$mirrorTagsFiles[ $fileName ]
+			);
+		}
 	}
 
 	public function tearDown() {

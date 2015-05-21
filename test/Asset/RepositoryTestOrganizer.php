@@ -57,10 +57,18 @@ class RepositoryTestOrganizer {
 	 */
 	public function setUpRepositories() {
 
-		foreach ( $this->repositories as $name => $info )
-			$this->initRepository( $name, $info[ 'path' ], $info[ 'remotes' ] );
-
+		// setup the source (origin) repo
+		$this->initRepository( $this->repositories[ 'source' ] );
 		$this->createDefaultContent( $this->repositories[ 'source' ] );
+
+		// setup the mirror repository as bare repository
+		$this->initRepository( $this->repositories[ 'mirror' ], TRUE );
+
+		// create the process repository
+		$this->cloneRepository(
+			$this->repositories[ 'process' ],
+			$this->repositories[ 'source' ]
+		);
 	}
 
 	/**
@@ -81,30 +89,78 @@ class RepositoryTestOrganizer {
 
 		file_put_contents( $readmeFile, "Update!\n", FILE_APPEND );
 
-		`git commit -m"update readme"`;
+		`git commit -am"update readme"`;
 	}
 
 	/**
-	 * @param string $name
-	 * @param string $path
-	 * @param array $remotes
+	 * @param Array $repository
+	 * @param bool $bare
 	 */
-	public function initRepository( $name, $path, Array $remotes ) {
+	public function initRepository( Array $repository, $bare = FALSE ) {
 
-		if ( ! is_dir( $path ) )
-			mkdir( $path );
+		if ( ! is_dir( $repository[ 'path' ] ) )
+			mkdir( $repository[ 'path' ] );
 
-		chdir( $path );
-		`git init`;
+		chdir( $repository[ 'path' ] );
+		if ( ! $bare )
+			`git init`;
+		else
+			`git init --bare`;
 
-		if ( empty( $remotes ) )
+		if ( empty( $repository[ 'remotes' ] ) )
 			return;
 
-		foreach ( $remotes as $name => $uri ) {
+		foreach ( $repository[ 'remotes' ] as $name => $uri ) {
 			$name = escapeshellarg( $name );
 			$uri  = escapeshellarg( $uri );
 
 			`git remote add $name $uri`;
+		}
+	}
+
+	/**
+	 * add some stuff to the source repo to test
+	 * against after an additional app run
+	 */
+	public function updateSourceRepo() {
+
+		$repo = $this->repositories[ 'source' ];
+		chdir( $repo[ 'path' ] );
+
+		`git checkout master`;
+
+		$newFile = $repo[ 'path' ] . '/newFile.txt';
+		file_put_contents( $newFile, 'Foo Bar' );
+
+		`git add .`;
+		`git commit -m"add new file"`;
+		`git tag v1.2`;
+		`git checkout -b 1.2-branch`;
+	}
+
+	/**
+	 * @param array $cloneRepo
+	 * @param array $sourceRepo
+	 */
+	public function cloneRepository( Array $cloneRepo, Array $sourceRepo ) {
+
+		if ( ! is_dir( $cloneRepo[ 'path' ] ) )
+			mkdir( $cloneRepo[ 'path' ] );
+
+		chdir( $cloneRepo[ 'path' ] );
+		$sourcePath = escapeshellarg( $sourceRepo[ 'path' ] );
+
+		`git clone $sourcePath .`;
+
+		// add other remotes if necessary
+		foreach ( $cloneRepo[ 'remotes' ] as $name => $path ) {
+			if ( 'origin' === $name )
+				continue;
+
+			$name = escapeshellarg( $name );
+			$path = escapeshellarg( $path );
+
+			`git remote add $name $path`;
 		}
 	}
 
