@@ -2,3 +2,4 @@ vendor/
 test/bootstrap.php
 test/phpunit.xml
 bin/dev-run.sh
+test/tmp/*/
