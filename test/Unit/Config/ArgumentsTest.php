@@ -1,7 +1,7 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\Test\Unit\Config;
-use GitAutomatedMirror\Test\Assets;
+use GitAutomatedMirror\Test\Asset;
 use GitAutomatedMirror\Config;
 
 class ArgumentsTest extends \PHPUnit_Framework_TestCase {
@@ -12,7 +12,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testRegisterDefaultArguments() {
 
-		$mockBuilder = new Assets\MockBuilder( $this );
+		$mockBuilder = new Asset\MockBuilder( $this );
 		$attributeBuilder = $mockBuilder->getCommonApplicationArgumentBuilderMock();
 		$attributeBuilder->expects( $this->exactly( 4 ) )
 			->method( 'buildArgument' )
@@ -49,7 +49,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetCombinedName( Array $data, $expected ) {
 
-		$mockBuilder = new Assets\MockBuilder( $this );
+		$mockBuilder = new Asset\MockBuilder( $this );
 		$attributeBuilder = $mockBuilder->getCommonApplicationArgumentBuilderMock();
 		$optionCollection = $mockBuilder->getOptionCollectionMock();
 

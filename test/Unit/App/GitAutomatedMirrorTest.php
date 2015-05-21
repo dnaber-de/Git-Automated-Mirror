@@ -1,7 +1,7 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\Test\Unit\App;
-use GitAutomatedMirror\Test\Assets;
+use GitAutomatedMirror\Test\Asset;
 use GitAutomatedMirror\App;
 use GitAutomatedMirror\Config;
 use Dice;
@@ -9,14 +9,14 @@ use Dice;
 class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @type Assets\RepositoryTestOrganizer
+	 * @type Asset\RepositoryTestOrganizer
 	 */
 	private $organizer;
 
 	public function setUp() {
 
 		$tmpDir = dirname( dirname( __DIR__ ) ) . '/tmp';
-		$this->organizer = new Assets\RepositoryTestOrganizer( $tmpDir );
+		$this->organizer = new Asset\RepositoryTestOrganizer( $tmpDir );
 		$this->organizer->cleanUp();
 		$this->organizer->setUpRepositories();
 	}

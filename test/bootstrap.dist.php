@@ -20,5 +20,5 @@ $loader->load_source();
 
 $loader = new Requisite\SPLAutoLoader;
 $loader->addRule(
-	new Requisite\Rule\NamespaceDirectoryMapper( __DIR__ . '/Assets', __NAMESPACE__ . '\Assets' )
+	new Requisite\Rule\NamespaceDirectoryMapper( __DIR__ . '/Asset', __NAMESPACE__ . '\Asset' )
 );

@@ -2,7 +2,7 @@
 
 namespace GitAutomatedMirror\Test\Unit\Git;
 use GitAutomatedMirror\Git;
-use GitAutomatedMirror\Test\Assets;
+use GitAutomatedMirror\Test\Asset;
 
 class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 
@@ -13,7 +13,7 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testParseBranchName( $name, Array $expected ) {
 
-		$mockBuilder = new Assets\MockBuilder( $this );
+		$mockBuilder = new Asset\MockBuilder( $this );
 		$gitMock = $mockBuilder->getPhpGitMock( [ 'branch' ] );
 		$gitMock->expects( $this->any() )
 			->method( 'branch' )
@@ -33,7 +33,7 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBuildBranches( Array $branches, Array $expectedBranchSignatures ) {
 
-		$mockBuilder = new Assets\MockBuilder( $this );
+		$mockBuilder = new Asset\MockBuilder( $this );
 		$gitMock = $mockBuilder->getPhpGitMock( [ 'branch' ] );
 		$gitMock->expects( $this->any() )
 			->method( 'branch' )

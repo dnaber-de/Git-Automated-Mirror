@@ -1,6 +1,6 @@
 <?php # -*- coding: utf-8 -*-
 
-namespace GitAutomatedMirror\Test\Assets;
+namespace GitAutomatedMirror\Test\Asset;
 
 /**
  * Sets up a Repository (tmp/process) with two local remotes
