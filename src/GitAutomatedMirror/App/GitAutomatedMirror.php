@@ -124,6 +124,14 @@ class GitAutomatedMirror {
 			return;
 		}
 
+		// the remote we want to pull from
+		$sourceRemote = $appArguments->getRemoteSource();
+		// the remote we want to push to
+		$mirrorRemote = $appArguments->getRemoteMirror();
+
+		// now fetch the updates
+		$this->git->fetch( $sourceRemote );
+
 		/**
 		 * The BranchReader gets us the branches from the repository
 		 *
@@ -131,16 +139,7 @@ class GitAutomatedMirror {
 		 */
 		$branchReader = $this->diContainer->create( 'GitAutomatedMirror\Git\BranchReader' );
 		$branchReader->buildBranches();
-		$branches = $branchReader->getBranches();
-
-
-		// the remote we want to pull from
-		$sourceRemote = $appArguments->getRemoteSource();
-		// the remote we want to push to
-		$mirrorRemote = $appArguments->getRemoteMirror();
-
 		$ignoredBranches = new Git\IgnoredBranches( $branchReader );
-
 		$branchesSynchronizer = new Git\BranchsSynchronizer( $this->git, $branchReader, $this->eventEmitter );
 		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )
 			$branchesSynchronizer->pushIgnoredBranch( $branch );
@@ -149,6 +148,11 @@ class GitAutomatedMirror {
 		$branchesSynchronizer->pushIgnoredBranch( new Type\GitBranch( 'HEAD', FALSE ) );
 		$branchesSynchronizer->synchronizeBranches( $sourceRemote, $mirrorRemote );
 
+		// unfortunately PHPGit does not support fetching tags
+		chdir( $appArguments->getRepository() );
+		$tmp = `git fetch --tags`;
+
+		$this->git->push( $appArguments->getRemoteMirror(), NULL, [ 'tags' => TRUE ] );
 	}
 
 	public function shutdown() {

@@ -48,16 +48,13 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 			$diContainer,
 			new Config\DiceConfigurator( $diContainer )
 		);
-
+		$GLOBALS[ 'debug' ] = FALSE;
+		$testee->init();
 		$testee->run( $argv );
 		$this->compareRepositories();
 		$this->organizer->updateSourceRepo();
 
-		$diContainer = new Dice\Dice;
-		$testee = new App\GitAutomatedMirror(
-			$diContainer,
-			new Config\DiceConfigurator( $diContainer )
-		);
+		$GLOBALS[ 'debug' ] = TRUE;
 		$testee->run( $argv );
 		$this->compareRepositories();
 
@@ -65,6 +62,7 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 
 	private function compareRepositories() {
 
+		$gitParser = new Asset\GitStdOutParser;
 		$repositories = $this->organizer->getRepositories();
 		// test the existence of all heads
 		// note: mirror is a bare repository
@@ -91,38 +89,44 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 		$sourceTagsFiles = $dirTools->getFiles();
 
 		/**
-		 * each HEAD in the source must appear in the mirror
-		 * and each file should point to the same object
+		 * compare branches
 		 */
-		foreach ( $sourceHeadsFiles as $fileName => $filePath ) {
-			$this->assertArrayHasKey(
-				$fileName,
-				$mirrorHeadsFiles,
-				"HEAD $fileName does not exist in mirror repo."
-			);
+		chdir( $repositories[ 'source' ][ 'path' ] );
+		$rawSourceBranches = `git branch -a`;
+		$sourceBranches = $gitParser->parseBranches( $rawSourceBranches );
 
-			$this->assertFileEquals(
-				$filePath,
-				$mirrorHeadsFiles[ $fileName ]
-			);
-		}
+		chdir( $repositories[ 'mirror' ][ 'path' ] );
+		$rawMirrorBranches = `git branch -a`;
+		$mirrorBranches = $gitParser->parseBranches( $rawMirrorBranches );
+
+		$this->assertEquals(
+			$sourceBranches,
+			$mirrorBranches,
+			"Branches are not matching",
+			0.0,
+			10,
+			TRUE //canonicalize: ignore order of elements in Arrays
+		);
 
 		/**
-		 * each Tag in the source must appear in the mirror
-		 * and each file should point to the same object
+		 * compare tags
 		 */
-		foreach ( $sourceTagsFiles as $fileName => $filePath ) {
-			$this->assertArrayHasKey(
-				$fileName,
-				$mirrorTagsFiles,
-				"Tag $fileName does not exist in mirror repo."
-			);
+		chdir( $repositories[ 'source' ][ 'path' ] );
+		$rawSourceTags = `git tag`;
+		$sourceTags = $gitParser->parseTags( $rawSourceTags );
 
-			$this->assertFileEquals(
-				$filePath,
-				$mirrorTagsFiles[ $fileName ]
-			);
-		}
+		chdir( $repositories[ 'mirror' ][ 'path' ] );
+		$rawMirrorTags = `git tag`;
+		$mirrorTags = $gitParser->parseTags( $rawMirrorTags );
+
+		$this->assertEquals(
+			$sourceTags,
+			$mirrorTags,
+			"Tags are not matching",
+			0.0,
+			10,
+			TRUE //canonicalize: ignore order of elements in Arrays
+		);
 	}
 
 	public function tearDown() {
