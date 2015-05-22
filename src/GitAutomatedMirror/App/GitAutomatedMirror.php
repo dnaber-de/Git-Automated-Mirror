@@ -30,6 +30,26 @@ class GitAutomatedMirror {
 	private $args;
 
 	/**
+	 * @type PHPGit\Git
+	 */
+	private $git;
+
+	/**
+	 * @type Event\Emitter
+	 */
+	private $eventEmitter;
+
+	/**
+	 * @type Argument\ArgumentsController
+	 */
+	private $argController;
+
+	/**
+	 * @type GetOptionKit\OptionCollection
+	 */
+	private $argumentsSpecification;
+
+	/**
 	 * @param Dice\Dice               $diContainer
 	 * @param Config\DiceConfigurator $diceConfigurator
 	 */
@@ -43,32 +63,29 @@ class GitAutomatedMirror {
 	}
 
 	/**
+	 * initialize the objects
+	 */
+	public function init() {
+
+		$this->diceConfigurator->initialConfiguration();
+		$this->git = $this->diContainer->create( 'PHPGit\Git' );
+		$this->eventEmitter = $this->diContainer->create( 'League\Event\Emitter' );
+		$this->argController = $this->diContainer->create( 'GitAutomatedMirror\Argument\ArgumentsController' );
+		$this->argumentsSpecification = $this->diContainer->create( 'GetOptionKit\OptionCollection' );
+		// Register arguments
+		$this->argController->registerArguments();
+	}
+
+	/**
 	 * Damn this mess has to be refactored
 	 *
 	 * @param array $argv
 	 */
 	public function run( array $argv ) {
 
-		$this->diceConfigurator->initialConfiguration();
-
-		/* @type PHPGit\Git $git */
-		$git = $this->diContainer->create( 'PHPGit\Git' );
-
-		/* @type Event\Emitter $eventEmitter */
-		$eventEmitter = $this->diContainer->create( 'League\Event\Emitter' );
-
-		/* @type Argument\ArgumentsController $argController */
-		$argController = $this->diContainer->create( 'GitAutomatedMirror\Argument\ArgumentsController' );
-
-		/* @type GetOptionKit\OptionCollection $argument_specs */
-		$argumentsSpec = $this->diContainer->create( 'GetOptionKit\OptionCollection' );
-
-		// Register arguments and parse $argv
-		$argController->registerArguments();
-		$optionResults = $argController->parseInput( $argv );
-
+		$optionResults = $this->argController->parseInput( $argv );
 		/**
-		 * share the parsing results with the object tree
+		 * share the passed arguments with the object tree
 		 */
 		$this->diceConfigurator->applySubstitution(
 			'GetOptionKit\OptionResult',
@@ -86,7 +103,7 @@ class GitAutomatedMirror {
 		// closing the application if the help argument is passed or there are no arguments at all
 		if ( $optionResults->has( 'help' ) || ! $argValidator->isValidRequest() ) {
 			$printer = new GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
-			echo $printer->render( $argumentsSpec );
+			echo $printer->render( $this->argumentsSpecification );
 			return;
 		}
 
@@ -97,7 +114,7 @@ class GitAutomatedMirror {
 		 */
 		$appArguments = $this->diContainer->create( __NAMESPACE__ . '\GitMirrorArguments' );
 
-		$git->setRepository( $appArguments->getRepository() );
+		$this->git->setRepository( $appArguments->getRepository() );
 
 		// now that are all required arguments exists, check the given remotes
 		if ( ! $argValidator->remotesExists() ) {
@@ -124,7 +141,7 @@ class GitAutomatedMirror {
 
 		$ignoredBranches = new Git\IgnoredBranches( $branchReader );
 
-		$branchesSynchronizer = new Git\BranchsSynchronizer( $git, $branchReader, $eventEmitter );
+		$branchesSynchronizer = new Git\BranchsSynchronizer( $this->git, $branchReader, $this->eventEmitter );
 		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )
 			$branchesSynchronizer->pushIgnoredBranch( $branch );
 
