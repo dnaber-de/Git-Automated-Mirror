@@ -4,6 +4,18 @@ namespace GitAutomatedMirror\Config;
 use GitAutomatedMirror\App;
 use Dice;
 
+/**
+ * Improvement refactoring hints:
+ *
+ * Currently the class does two things: It provides an interface to
+ * apply substitutions to the Dice instance (which is not application specific)
+ *
+ * and
+ *
+ * it builds up concrete instances of other classes which is application specific
+ *
+ * both should be split to separate classes.
+ */
 class DiceConfigurator {
 
 	/**
@@ -40,7 +52,6 @@ class DiceConfigurator {
 		$this->diContainer->addRule( 'PHPGit\Git', $gitRule );
 
 		// share the event emitter
-
 		$eventEmitterRule = new Dice\Rule;
 		$eventEmitterRule->shared = TRUE;
 		$this->diContainer->addRule( 'League\Event\Emitter', $eventEmitterRule );

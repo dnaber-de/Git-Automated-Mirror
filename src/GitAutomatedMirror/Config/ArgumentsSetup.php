@@ -5,6 +5,14 @@ use GitAutomatedMirror\Common;
 use GitAutomatedMirror\Type;
 use GetOptionKit;
 
+/**
+ * Improvement refactoring hints:
+ *
+ * The class has the same problem like DiceConfigurator:
+ *
+ * it combines general interfaces (registering arguments) with
+ * application specific setups (create arguments)
+ */
 class ArgumentsSetup {
 
 	/**
