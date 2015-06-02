@@ -59,7 +59,7 @@ class ArgumentsValidator {
 	public function getMissingArguments() {
 
 		$missingArguments = [];
-		$argSpecification = $this->arguments->getDefinedArguments();
+		$argSpecification = $this->arguments->getRegisteredArguments();
 		foreach ( $argSpecification as $arg ) {
 			/* @type Type\ApplicationArgument $arg */
 			if ( ! $arg->isRequired() )

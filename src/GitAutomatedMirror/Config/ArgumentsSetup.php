@@ -26,9 +26,11 @@ class ArgumentsSetup {
 	private $argumentBuilder;
 
 	/**
+	 * all possible application arguments
+	 *
 	 * @type array
 	 */
-	private $definedArguments = [];
+	private $registeredArguments = [];
 
 	/**
 	 * @param GetOptionKit\OptionCollection   $optionCollection
@@ -50,7 +52,7 @@ class ArgumentsSetup {
 	 */
 	public function registerDefaultArguments() {
 
-		foreach ( $this->definedArguments as $arg ) {
+		foreach ( $this->registeredArguments as $arg ) {
 			/* @type Type\ApplicationArgument $arg */
 			$combinedName = $this->getCombinedName( $arg );
 			$this->optionCollection->add( $combinedName )
@@ -97,7 +99,7 @@ class ArgumentsSetup {
 		];
 
 		foreach ( $definedArgumentsStructure as $arg ) {
-			$this->definedArguments[ $arg[ 'name' ] ] = $this->argumentBuilder->buildArgument(
+			$this->registeredArguments[ $arg[ 'name' ] ] = $this->argumentBuilder->buildArgument(
 				$arg[ 'name' ],
 				$arg[ 'type' ],
 				$arg[ 'isRequired' ],
@@ -133,8 +135,8 @@ class ArgumentsSetup {
 	 *
 	 * @return array
 	 */
-	public function getDefinedArguments() {
+	public function getRegisteredArguments() {
 
-		return $this->definedArguments;
+		return $this->registeredArguments;
 	}
 }
