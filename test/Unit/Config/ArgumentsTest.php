@@ -14,7 +14,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 
 		$mockBuilder = new Asset\MockBuilder( $this );
 		$attributeBuilder = $mockBuilder->getCommonApplicationArgumentBuilderMock();
-		$attributeBuilder->expects( $this->exactly( 4 ) )
+		$attributeBuilder->expects( $this->exactly( 5 ) )
 			->method( 'buildArgument' )
 			->willReturnCallback(
 				function() {
@@ -34,7 +34,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 		$option_mock->expects( $this->atLeast( 1 ) )
 			->method( 'desc' )
 			->willReturn( $option_mock );
-		$optionCollection->expects( $this->exactly( 4 ) )
+		$optionCollection->expects( $this->exactly( 5 ) )
 			->method( 'add' )
 			->willReturn( $option_mock );
 

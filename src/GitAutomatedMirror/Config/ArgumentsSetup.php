@@ -96,6 +96,13 @@ class ArgumentsSetup {
 				'shortName'   => '',
 				'description' => 'Remote of the mirror repo.'
 			],
+			[
+				'name'        => 'merge-branch',
+				'type'        => 'string',
+				'isRequired'  => FALSE,
+				'shortName'   => '',
+				'description' => 'Local branch to merge each origin branch before push to mirror.'
+			]
 		];
 
 		foreach ( $definedArgumentsStructure as $arg ) {

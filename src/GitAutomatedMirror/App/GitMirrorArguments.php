@@ -66,4 +66,21 @@ class GitMirrorArguments {
 			$remoteInfo[ $remote ][ 'fetch' ]
 		);
 	}
+
+	/**
+	 * @return Type\GitBranch | NULL
+	 */
+	public function getMergeBranch() {
+
+		if ( ! isset( $this->optionResults[ 'merge-branch' ] ) )
+			return NULL;
+
+		$branchName = $this->optionResults[ 'merge-branch' ];
+		if ( empty( $branchName ) )
+			return NULL;
+
+		$mergeBranch = new Type\GitBranch( $branchName );
+
+		return $mergeBranch;
+	}
 } 
