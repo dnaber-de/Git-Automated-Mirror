@@ -121,7 +121,12 @@ class GitAutomatedMirror {
 		$listenerProvider = $this->diContainer->create(
 			'GitAutomatedMirror\Event\ListenerProvider\ListenerMapProvider',
 			[
-				[ '*' => $this->diContainer->create( 'GitAutomatedMirror\Event\Listener\EventNameTracer' ) ]
+				[
+					'git.synchronize.done' => $this->diContainer
+						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
+					'git.synchronize.beforePushBranch' => $this->diContainer
+						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' )
+				]
 			]
 		);
 		$emitter->useListenerProvider( $listenerProvider );

@@ -70,6 +70,11 @@ class DiceConfigurator {
 			'GitAutomatedMirror\Event\Listener\EventNameTracer',
 			$rule
 		);
+		$this->diContainer->addRule(
+			'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter',
+			$rule
+		);
+
 	}
 
 	/**
