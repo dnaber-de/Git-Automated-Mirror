@@ -58,6 +58,21 @@ class DiceConfigurator {
 	}
 
 	/**
+	 * @todo maybe extend this with parameters for verbose or debug output
+	 */
+	public function printerConfiguration() {
+
+		$rule = new Dice\Rule;
+		$rule->substitutions[ 'GitAutomatedMirror\Printer\PrinterInterface' ] =
+			new Dice\Instance( 'GitAutomatedMirror\Printer\StdOutPrinter' );
+
+		$this->diContainer->addRule(
+			'GitAutomatedMirror\Event\Listener\EventNameTracer',
+			$rule
+		);
+	}
+
+	/**
 	 * share a already created instance with the DI container
 	 * to all dependents
 	 *

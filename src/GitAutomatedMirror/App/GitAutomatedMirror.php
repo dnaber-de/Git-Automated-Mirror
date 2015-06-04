@@ -74,6 +74,8 @@ class GitAutomatedMirror {
 		$this->argumentsSpecification = $this->diContainer->create( 'GetOptionKit\OptionCollection' );
 		// Register arguments
 		$this->argController->registerArguments();
+
+		$this->diceConfigurator->printerConfiguration();
 	}
 
 	/**
@@ -106,6 +108,23 @@ class GitAutomatedMirror {
 			echo $printer->render( $this->argumentsSpecification );
 			return;
 		}
+
+		/**
+		 * EventListener Provider
+		 *
+		 * @todo exclude this somehow
+		 *
+		 * @type Event\Emitter $emitter
+		 * @type Event\ListenerProviderInterface $listenerProvider
+		 */
+		$emitter = $this->diContainer->create( 'League\Event\Emitter' );
+		$listenerProvider = $this->diContainer->create(
+			'GitAutomatedMirror\Event\ListenerProvider\ListenerMapProvider',
+			[
+				[ '*' => $this->diContainer->create( 'GitAutomatedMirror\Event\Listener\EventNameTracer' ) ]
+			]
+		);
+		$emitter->useListenerProvider( $listenerProvider );
 
 		/**
 		 * Gives access to the script arguments
