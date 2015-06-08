@@ -74,7 +74,7 @@ class BranchsSynchronizer {
 	public function synchronizeBranches( Type\GitRemote $from, Type\GitRemote $to ) {
 
 		foreach ( $this->branchReader->getBranches() as $branch ) {
-			if ( in_array( $branch, $this->ignoredBranches ) )
+			if ( $this->isIgnoredBranch( $branch ) )
 				continue;
 			$this->synchronizeSingleBranch( $branch, $from, $to );
 		}
@@ -181,5 +181,19 @@ class BranchsSynchronizer {
 		$this->git->push( $to->getName(), $branch->getName(), [ 'force' => TRUE ] );
 
 		return TRUE;
+	}
+
+	/**
+	 * @param Type\GitBranch $branch
+	 *
+	 * @return bool
+	 */
+	public function isIgnoredBranch( Type\GitBranch $branch ) {
+
+		foreach ( $this->ignoredBranches as $ignoredBranch )
+			if ( $branch->getName() === $ignoredBranch->getName() )
+				return TRUE;
+
+		return FALSE;
 	}
 } 
