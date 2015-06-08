@@ -77,7 +77,7 @@ class ArgumentsTest extends \PHPUnit_Framework_TestCase {
 				'shortName'  => 'h',
 				'isRequired' => FALSE
 			],
-			'h|help'
+			'h|help?'
 		];
 		#0:
 		$data[] = [

@@ -133,6 +133,10 @@ class ArgumentsSetup {
 
 		if ( $arg->isRequired() )
 			$name .= ':';
+		else
+			$name .= '?';
+
+		$name .= $arg->getType();
 
 		return $name;
 	}
