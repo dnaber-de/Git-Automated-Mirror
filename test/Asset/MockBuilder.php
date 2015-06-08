@@ -96,6 +96,31 @@ class MockBuilder {
 	}
 
 	/**
+	 * @param string $eventName
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getEventMock( $eventName = NULL ) {
+
+		$mock = $this->getMockWithoutConstructor( 'League\Event\Event' );
+		if ( $eventName )
+			$mock->expects( $this->testCase->any() )
+				->method( 'getName' )
+				->willReturn( $eventName );
+
+		return $mock;
+	}
+
+	/**
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getGitBranchMock() {
+
+		$mock = $this->getMockWithoutConstructor( 'GitAutomatedMirror\Type\GitBranch' );
+
+		return $mock;
+	}
+
+	/**
 	 * @param string $class
 	 * @param Array $methods
 	 * @return \PHPUnit_Framework_MockObject_MockObject
