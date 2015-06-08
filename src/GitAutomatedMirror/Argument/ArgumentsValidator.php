@@ -108,4 +108,35 @@ class ArgumentsValidator {
 
 		return [] === $this->getMissingArguments();
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function mergeBranchProvided() {
+
+		$argumentName = 'merge-branch';
+
+		return isset( $this->optionResults[ $argumentName ] )
+			&& ! empty( $this->optionResults[ $argumentName ] );
+	}
+
+	/**
+	 * @return bool|NULL
+	 */
+	public function mergeBranchExists() {
+
+		if ( ! $this->mergeBranchProvided() )
+			return NULL;
+
+		$argumentName = 'merge-branch';
+		$mergeBranch = $this->optionResults[ $argumentName ]->value;
+
+		$branches = $this->git->branch( [ 'all' => TRUE ] );
+		foreach ( $branches as $branchInfo ) {
+			if ( $mergeBranch === $branchInfo[ 'name' ] )
+				return TRUE;
+		}
+
+		return FALSE;
+	}
 } 

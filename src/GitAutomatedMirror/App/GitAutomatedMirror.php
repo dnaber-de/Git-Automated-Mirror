@@ -5,6 +5,7 @@ use GitAutomatedMirror\Config;
 use GitAutomatedMirror\Git;
 use GitAutomatedMirror\Type;
 use GitAutomatedMirror\Argument;
+use GitAutomatedMirror\Printer;
 use League\Event;
 use GetOptionKit;
 use PHPGit;
@@ -102,10 +103,27 @@ class GitAutomatedMirror {
 		/** @type  Argument\ArgumentsValidator $argValidator */
 		$argValidator = $this->diContainer->create( 'GitAutomatedMirror\Argument\ArgumentsValidator' );
 
+		/**
+		 * give access to the script arguments
+		 *
+		 * @type GitMirrorArguments $appArguments
+		 */
+		$appArguments = $this->diContainer->create( __NAMESPACE__ . '\GitMirrorArguments' );
+
 		// closing the application if the help argument is passed or there are no arguments at all
 		if ( $optionResults->has( 'help' ) || ! $argValidator->isValidRequest() ) {
 			$printer = new GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
 			echo $printer->render( $this->argumentsSpecification );
+			return;
+		}
+
+		// tell the git client about the directory
+		$this->git->setRepository( $appArguments->getRepository() );
+
+		// invalid merge-branch argument
+		if ( $argValidator->mergeBranchProvided() && ! $argValidator->mergeBranchExists() ) {
+			$printer = new Printer\StdOutPrinter;
+			$printer->printLine( "Error: Merge branch does not exist!" );
 			return;
 		}
 
@@ -114,15 +132,9 @@ class GitAutomatedMirror {
 		 */
 		$eventListenerAssigner = $this->diContainer->create( 'GitAutomatedMirror\Config\EventListenerAssigner' );
 		$eventListenerAssigner->registerGitSynchronizeListener();
+		if ( $argValidator->mergeBranchProvided() )
+			$eventListenerAssigner->registerMergeBranchListener( $appArguments->getMergeBranch() );
 
-		/**
-		 * Gives access to the script arguments
-		 *
-		 * @type GitMirrorArguments $appArguments
-		 */
-		$appArguments = $this->diContainer->create( __NAMESPACE__ . '\GitMirrorArguments' );
-
-		$this->git->setRepository( $appArguments->getRepository() );
 
 		// now that are all required arguments exists, check the given remotes
 		if ( ! $argValidator->remotesExists() ) {

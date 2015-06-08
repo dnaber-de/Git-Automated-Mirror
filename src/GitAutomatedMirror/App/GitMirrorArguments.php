@@ -84,11 +84,11 @@ class GitMirrorArguments {
 		if ( ! isset( $this->optionResults[ 'merge-branch' ] ) )
 			return NULL;
 
-		$branchName = $this->optionResults[ 'merge-branch' ];
+		$branchName = $this->optionResults[ 'merge-branch' ]->value;
 		if ( empty( $branchName ) )
 			return NULL;
 
-		$mergeBranch = new Type\GitBranch( $branchName );
+		$mergeBranch = new Type\GitBranch( $branchName, TRUE );
 
 		return $mergeBranch;
 	}

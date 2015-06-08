@@ -1,6 +1,9 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\Config;
+use GitAutomatedMirror\Type;
+use GitAutomatedMirror\Event\Listener;
+use GitAutomatedMirror\Event\ListenerProvider;
 use GetOptionKit;
 use League\Event;
 use Dice;
@@ -55,21 +58,37 @@ class EventListenerAssigner {
 
 		/**
 		 * @type Event\Emitter $emitter
-		 * @type Event\ListenerProviderInterface $listenerProvider
-		 *
 		 */
 		$emitter = $this->diContainer->create( 'League\Event\Emitter' );
-		$listenerProvider = $this->diContainer->create(
-			'GitAutomatedMirror\Event\ListenerProvider\ListenerMapProvider',
+		$listenerProvider = new ListenerProvider\ListenerMapProvider(
 			[
-				[
-					'git.synchronize.done' => $this->diContainer
-							->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
-					'git.synchronize.beforePushBranch' => $this->diContainer
-							->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' )
-				]
+				'git.synchronize.done' => $this->diContainer
+						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
+				'git.synchronize.beforePushBranch' => $this->diContainer
+						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
+				'git.event.mergedMergeBranch' => $this->diContainer
+						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' )
 			]
 		);
+		$emitter->useListenerProvider( $listenerProvider );
+	}
+
+	/**
+	 * @param Type\GitBranch $mergeBranch
+	 */
+	public function registerMergeBranchListener( Type\GitBranch $mergeBranch ) {
+
+		/**
+		 * @type Event\Emitter $emitter
+		 */
+		// @todo: resolve this courier anti-pattern
+		$listener = new Listener\MergeArgumentBranch( $mergeBranch, $this->eventEmitter );
+		$listenerProvider = new ListenerProvider\ListenerMapProvider(
+			[
+				'git.synchronize.beforePushBranch' => $listener
+			]
+		);
+		$emitter = $this->diContainer->create( 'League\Event\Emitter' );
 		$emitter->useListenerProvider( $listenerProvider );
 	}
 } 

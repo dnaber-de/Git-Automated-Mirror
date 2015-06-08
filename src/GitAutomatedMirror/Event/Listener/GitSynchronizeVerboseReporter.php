@@ -53,6 +53,10 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 				$message = $this->getSynchronizeDoneMessage( $event, $eventParameter );
 				break;
 
+			case 'git.event.mergedMergeBranch' :
+				$message = $this->getMergeBranchMergedMessage( $event, $eventParameter );
+				break;
+
 			default :
 				$message = $this->getUnknownEventMessage( $event );
 				break;
@@ -119,6 +123,22 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 		return $message;
 	}
 
+	public function getMergeBranchMergedMessage( Event\EventInterface $event, Array $eventParameter ) {
+
+		/**
+		 * @type Type\GitBranch $banch
+		 * @type Type\GitBranch $mergeBranch
+		 */
+		$branch = $eventParameter[ 'branch' ];
+		$mergeBranch   = $eventParameter[ 'mergeBranch' ];
+		$message    = sprintf(
+			"Merged '%s' into '%s'",
+			$mergeBranch,
+			$branch
+		);
+
+		return $message;
+	}
 	/**
 	 * Check weather the listener is the given parameter.
 	 *

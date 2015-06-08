@@ -22,11 +22,21 @@ class MergeArgumentBranch implements Event\ListenerInterface {
 	private $branchToMerge;
 
 	/**
-	 * @param Type\GitBranch    $branchToMerge
+	 * @type Event\Emitter
 	 */
-	public function __construct( Type\GitBranch $branchToMerge ) {
+	private $eventEmitter;
+
+	/**
+	 * @param Type\GitBranch $branchToMerge
+	 * @param Event\Emitter  $eventEmitter
+	 */
+	public function __construct(
+		Type\GitBranch $branchToMerge,
+		Event\Emitter $eventEmitter
+	) {
 
 		$this->branchToMerge = $branchToMerge;
+		$this->eventEmitter = $eventEmitter;
 	}
 
 	/**
@@ -55,6 +65,13 @@ class MergeArgumentBranch implements Event\ListenerInterface {
 			[
 				'no-ff' => TRUE,
 				'strategy' => 'ours' //  the source repo "wins"
+			]
+		);
+		$this->eventEmitter->emit(
+			'git.event.mergedMergeBranch',
+			[
+				'branch' => $branch,
+				'mergeBranch' => $this->branchToMerge,
 			]
 		);
 	}
