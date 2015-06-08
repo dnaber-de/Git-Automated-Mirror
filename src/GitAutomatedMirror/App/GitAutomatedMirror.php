@@ -164,9 +164,14 @@ class GitAutomatedMirror {
 		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )
 			$branchesSynchronizer->pushIgnoredBranch( $branch );
 
-		# ignore some branches like HEAD
+		// ignore some branches like HEAD
 		$branchesSynchronizer->pushIgnoredBranch( new Type\GitBranch( 'HEAD', FALSE ) );
+		// don't sync the local merge branch
+		if ( $argValidator->mergeBranchProvided() )
+			$branchesSynchronizer->pushIgnoredBranch( $appArguments->getMergeBranch() );
+
 		$branchesSynchronizer->synchronizeBranches( $sourceRemote, $mirrorRemote );
+
 
 		// unfortunately PHPGit does not support fetching tags
 		chdir( $appArguments->getRepository() );
