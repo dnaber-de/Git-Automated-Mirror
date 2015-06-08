@@ -10,6 +10,7 @@ $loader->load_dependencies();
 $loader->load_source();
 $diContainer = new \Dice\Dice;
 $app = new App\GitAutomatedMirror( $diContainer, new Config\DiceConfigurator( $diContainer ) );
+$app->init();
 $app->run( $GLOBALS[ 'argv' ] );
 $app->shutdown();
 
