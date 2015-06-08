@@ -110,26 +110,10 @@ class GitAutomatedMirror {
 		}
 
 		/**
-		 * EventListener Provider
-		 *
-		 * @todo exclude this somehow
-		 *
-		 * @type Event\Emitter $emitter
-		 * @type Event\ListenerProviderInterface $listenerProvider
+		 * @type Config\EventListenerAssigner $eventListenerAssigner
 		 */
-		$emitter = $this->diContainer->create( 'League\Event\Emitter' );
-		$listenerProvider = $this->diContainer->create(
-			'GitAutomatedMirror\Event\ListenerProvider\ListenerMapProvider',
-			[
-				[
-					'git.synchronize.done' => $this->diContainer
-						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
-					'git.synchronize.beforePushBranch' => $this->diContainer
-						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' )
-				]
-			]
-		);
-		$emitter->useListenerProvider( $listenerProvider );
+		$eventListenerAssigner = $this->diContainer->create( 'GitAutomatedMirror\Config\EventListenerAssigner' );
+		$eventListenerAssigner->registerGitSynchronizeListener();
 
 		/**
 		 * Gives access to the script arguments
@@ -175,7 +159,6 @@ class GitAutomatedMirror {
 		// unfortunately PHPGit does not support fetching tags
 		chdir( $appArguments->getRepository() );
 		$tmp = `git fetch --tags`;
-
 		$this->git->push( $appArguments->getRemoteMirror(), NULL, [ 'tags' => TRUE ] );
 	}
 

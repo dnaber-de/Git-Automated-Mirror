@@ -37,11 +37,12 @@ class DiceConfigurator {
 	public function initialConfiguration() {
 
 		/**
-		 * setup Dice to share the OptionCollection instance
-		 * in the object tree
+		 * setup Dice to share instances of these objects
+		 * between the dependents
 		 *
 		 * @link https://r.je/dice.html
 		 */
+		// share the option collection
 		$optionCollectionRule = new Dice\Rule;
 		$optionCollectionRule->shared = TRUE;
 		$this->diContainer->addRule( 'GetOptionKit\OptionCollection', $optionCollectionRule );
@@ -55,6 +56,15 @@ class DiceConfigurator {
 		$eventEmitterRule = new Dice\Rule;
 		$eventEmitterRule->shared = TRUE;
 		$this->diContainer->addRule( 'League\Event\Emitter', $eventEmitterRule );
+
+		// share dice itself
+		$this->applySubstitution(
+			'Dice\Dice',
+			$this->diContainer,
+			[
+				'GitAutomatedMirror\Config\EventListenerAssigner'
+			]
+		);
 	}
 
 	/**
