@@ -27,7 +27,7 @@ class ArgumentsValidator {
 	 *
 	 * @type Config\ArgumentsSetup
 	 */
-	private $arguments;
+	private $argumentsSetup;
 
 	/**
 	 * @type PHPGit\Git
@@ -36,18 +36,18 @@ class ArgumentsValidator {
 
 	/**
 	 * @param GetOptionKit\OptionResult $optionResults
-	 * @param Config\ArgumentsSetup     $arguments
+	 * @param Config\ArgumentsSetup     $argumentsSetup
 	 * @param PHPGit\Git                $git
 	 */
 	public function __construct(
 		GetOptionKit\OptionResult $optionResults,
-		Config\ArgumentsSetup $arguments,
+		Config\ArgumentsSetup $argumentsSetup,
 		PHPGit\Git $git
 	) {
 
-		$this->optionResults = $optionResults;
-		$this->arguments    = $arguments;
-		$this->git          = $git;
+		$this->optionResults  = $optionResults;
+		$this->argumentsSetup = $argumentsSetup;
+		$this->git            = $git;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class ArgumentsValidator {
 	public function getMissingArguments() {
 
 		$missingArguments = [];
-		$argSpecification = $this->arguments->getRegisteredArguments();
+		$argSpecification = $this->argumentsSetup->getRegisteredArguments();
 		foreach ( $argSpecification as $arg ) {
 			/* @type Type\ApplicationArgument $arg */
 			if ( ! $arg->isRequired() )
