@@ -1,7 +1,7 @@
 {
 	"require" : {
 		"dnaber/requisite" : "~0.9",
-		"corneltek/getoptionkit": "~2.0",
+		"corneltek/getoptionkit": "~2.2",
 		"kzykhys/git": "v0.1.2",
 		"tombzombie/dice": "dev-PHP5.4---PHP5.5",
 		"league/event": "2.1.1"
