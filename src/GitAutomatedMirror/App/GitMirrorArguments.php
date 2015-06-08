@@ -5,6 +5,15 @@ use GitAutomatedMirror\Type;
 use GetOptionKit;
 use PHPGit;
 
+/**
+ * Class GitMirrorArguments
+ *
+ * provides the given arguments as
+ * instances of defined type interfaces
+ * (e.g. Type\GitBranch)
+ *
+ * @package GitAutomatedMirror\App
+ */
 class GitMirrorArguments {
 
 	/**
