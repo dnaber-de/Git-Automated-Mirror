@@ -5,6 +5,14 @@ use GitAutomatedMirror\Type;
 use League\Event;
 use PHPGit;
 
+/**
+ * Class BranchsSynchronizer
+ *
+ * Synchronize each branch from one remote to another
+ *
+ *
+ * @package GitAutomatedMirror\Git
+ */
 class BranchsSynchronizer {
 
 	/**
