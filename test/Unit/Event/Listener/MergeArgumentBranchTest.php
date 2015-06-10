@@ -8,11 +8,21 @@ class MergeArgumentBranchTest extends \PHPUnit_Framework_TestCase {
 
 	public function testHandle() {
 
-		$mockBuilder     = new Asset\MockBuilder( $this );
-		$eventMock       = $mockBuilder->getEventMock();
-		$branchMock      = $mockBuilder->getGitBranchMock();
-		$mergeBranchMock = $mockBuilder->getGitBranchMock();
-		$gitClientMock   = $mockBuilder->getPhpGitMock( [ 'checkout', 'merge' ] );
+		$mockBuilder      = new Asset\MockBuilder( $this );
+		$eventMock        = $mockBuilder->getEventMock();
+		$branchMock       = $mockBuilder->getGitBranchMock();
+		$mergeBranchMock  = $mockBuilder->getGitBranchMock();
+		$eventEmitterMock = $mockBuilder->getEventEmitterMock( [ 'emit' ] );
+		$eventEmitterMock->expects( $this->exactly( 1 ) )
+			->method( 'emit' )
+			->with(
+				'git.event.mergedMergeBranch',
+				[
+					'branch' => $branchMock,
+					'mergeBranch' => $mergeBranchMock
+				]
+			);
+		$gitClientMock    = $mockBuilder->getPhpGitMock( [ 'checkout', 'merge' ] );
 		$gitClientMock->expects( $this->exactly( 1 ) )
 			->method( 'checkout' )
 			->with( $branchMock );
@@ -31,7 +41,7 @@ class MergeArgumentBranchTest extends \PHPUnit_Framework_TestCase {
 			'branch'    => $branchMock
 		];
 
-		$testee = new Listener\MergeArgumentBranch( $mergeBranchMock );
+		$testee = new Listener\MergeArgumentBranch( $mergeBranchMock, $eventEmitterMock );
 		$void = $testee->handle( $eventMock, $arguments );
 		$this->assertNull( $void );
 	}
