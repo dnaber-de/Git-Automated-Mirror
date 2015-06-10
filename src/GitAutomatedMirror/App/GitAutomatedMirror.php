@@ -172,12 +172,15 @@ class GitAutomatedMirror {
 
 		$branchesSynchronizer->synchronizeBranches( $sourceRemote, $mirrorRemote );
 
-
-		// unfortunately PHPGit does not support fetching tags
-		chdir( $appArguments->getRepository() );
-		$tmp = `git fetch --tags`;
-		$this->git->push( $appArguments->getRemoteMirror(), NULL, [ 'tags' => TRUE ] );
+		$tagMerger = $this->diContainer->create( 'GitAutomatedMirror\Git\TagMerger' );
+		$tagMerger->fetchTags( $appArguments->getRepository(), $appArguments->getRemoteSource() );
+		if ( $argValidator->mergeBranchProvided() ) {
+			/** @type Git\TagMerger $tagMerger */
+			$tagMerger->mergeBranchIntoTags( $appArguments->getMergeBranch(), $appArguments->getRemoteMirror() );
+		}
+		$tagMerger->pushTags( $appArguments->getRemoteMirror() );
 	}
+
 
 	public function shutdown() {
 

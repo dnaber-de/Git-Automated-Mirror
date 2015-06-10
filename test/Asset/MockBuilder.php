@@ -121,6 +121,34 @@ class MockBuilder {
 	}
 
 	/**
+	 * @param array $methods
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getTagReaderMock( Array $methods = NULL ) {
+
+		$mock = $this->getMockWithoutConstructor(
+			'GitAutomatedMirror\Git\TagReader',
+			$methods
+		);
+
+		return $mock;
+	}
+
+	/**
+	 * @param array $methods
+	 * @return \PHPUnit_Framework_MockObject_MockObject
+	 */
+	public function getEventEmitterMock( Array $methods = NULL ) {
+
+		$mock = $this->getMockWithoutConstructor(
+			'League\Event\Emitter',
+			$methods
+		);
+
+		return $mock;
+	}
+
+	/**
 	 * @param string $class
 	 * @param Array $methods
 	 * @return \PHPUnit_Framework_MockObject_MockObject

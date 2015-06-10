@@ -72,6 +72,53 @@ class RepositoryTestOrganizer {
 	}
 
 	/**
+	 * create repositories for
+	 * @see TagMergerTest::testMergeBranch()
+	 */
+	public function setUpRepositoriesForTagTest() {
+
+		// setup the source (origin) repo
+		$this->initRepository( $this->repositories[ 'source' ] );
+		$this->createDefaultContent( $this->repositories[ 'source' ] );
+
+		// setup the mirror repository as bare repository
+		$this->initRepository( $this->repositories[ 'mirror' ], TRUE );
+
+		$this->setUpProcessRepositoryForTagTest( $this->repositories[ 'process' ] );
+	}
+
+	/**
+	 * create a process repository which has a branch (called the mergeBranch)
+	 * not in common with the source repository.
+	 *
+	 * @param array $repository
+	 */
+	private function setUpProcessRepositoryForTagTest( Array $repository ) {
+
+
+		if ( ! is_dir( $repository[ 'path' ] ) )
+			mkdir( $repository[ 'path' ] );
+
+		chdir( $repository[ 'path' ] );
+		`git init`;
+
+		$fileName = $repository[ 'path' ] . '/uniqueFile.txt';
+		file_put_contents( $fileName, "Merge me maybe!\n" );
+
+		`git checkout -b mergeBranch`;
+		`git add .`;
+		`git commit -m"add uniqueFile.txt"`;
+
+		foreach ( $repository[ 'remotes' ] as $remote => $uri ) {
+			$remote = escapeshellarg( $remote );
+			$uri = escapeshellarg( $uri );
+
+			`git remote add $remote $uri`;
+			`git fetch $remote`;
+		}
+	}
+
+	/**
 	 * create some default files to track with git
 	 *
 	 * @param array $repository
@@ -90,6 +137,26 @@ class RepositoryTestOrganizer {
 		file_put_contents( $readmeFile, "Update!\n", FILE_APPEND );
 
 		`git commit -am"update readme"`;
+	}
+
+
+	/**
+	 * create some tags
+	 *
+	 * @param array $repository
+	 */
+	public function createDefaultTags( Array $repository ) {
+
+		chdir( $repository[ 'path' ] );
+		`git checkout master`;
+		`git tag v1.0.0`;
+
+		$newFile = $repository[ 'path' ] . '/new-file.txt';
+		file_put_contents( $newFile, "Hello again\n" );
+
+		`git add .`;
+		`git commit -m"new file"`;
+		`git tag v1.0.1`;
 	}
 
 	/**
