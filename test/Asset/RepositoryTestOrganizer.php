@@ -177,11 +177,11 @@ class RepositoryTestOrganizer {
 	 */
 	public function cleanUp() {
 
-		$directroyEraser = new RecursiveDirectoryEraser;
+		$directoryEraser = new RecursiveDirectoryEraser;
 		foreach ( $this->repositories as $info ) {
 			if ( ! is_dir( $info[ 'path' ] ) )
 				continue;
-			$directroyEraser->rmDir( $info[ 'path' ] );
+			$directoryEraser->rmDir( $info[ 'path' ] );
 		}
 	}
 } 
