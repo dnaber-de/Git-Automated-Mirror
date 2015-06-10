@@ -13,19 +13,38 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 	 */
 	private $organizer;
 
+	/**
+	 * @type array
+	 */
+	private $repositories = [];
+
+	/**
+	 * @type Asset\GitStdOutParser
+	 */
+	private $gitParser;
+
+	/**
+	 * runs before each test
+	 */
 	public function setUp() {
+
+		$this->gitParser = new Asset\GitStdOutParser;
 
 		$tmpDir = dirname( dirname( __DIR__ ) ) . '/tmp';
 		$this->organizer = new Asset\RepositoryTestOrganizer( $tmpDir );
 		$this->organizer->cleanUp();
-		$this->organizer->setUpRepositories();
+		$this->repositories = $this->organizer->getRepositories();
 	}
 
 	/**
+	 * testing a call like
+	 * $ gitAutomatedMirror -d /path/to/repo --remote-source origin --remote-mirror mirror
+	 *
 	 * @see GitAutomatedMirror::run()
 	 */
 	public function testRun() {
 
+		$this->organizer->setUpRepositories();
 		$repositories = $this->organizer->getRepositories();
 		/**
 		 * Assuming a valid script call like
@@ -51,16 +70,16 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 		$GLOBALS[ 'debug' ] = FALSE;
 		$testee->init();
 		$testee->run( $argv );
-		$this->compareRepositories();
+		$this->compareRepositoriesForTestRun();
 		$this->organizer->updateSourceRepo();
 
 		$GLOBALS[ 'debug' ] = TRUE;
 		$testee->run( $argv );
-		$this->compareRepositories();
+		$this->compareRepositoriesForTestRun();
 
 	}
 
-	private function compareRepositories() {
+	private function compareRepositoriesForTestRun() {
 
 		$gitParser = new Asset\GitStdOutParser;
 		$repositories = $this->organizer->getRepositories();
@@ -127,6 +146,68 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 			10,
 			TRUE //canonicalize: ignore order of elements in Arrays
 		);
+	}
+
+	/**
+	 * testing a call like
+	 * $ gitAutomatedMirror -d /path/to/repo --remote-source origin --remote-mirror mirror --merge-branch mergeBranch
+	 *
+	 * @see GitAutomatedMirror::run()
+	 */
+	public function testRunWithMergeBranch() {
+
+		$this->organizer->setUpRepositoriesForTagTest();
+		$repositories = $this->organizer->getRepositories();
+
+		$argv = [
+			__FILE__,
+			'-d',
+			$repositories[ 'process' ][ 'path' ],
+			'--remote-source',
+			$repositories[ 'source' ][ 'name' ],
+			'--remote-mirror',
+			$repositories[ 'mirror' ][ 'name' ],
+			'--merge-branch',
+			'mergeBranch'
+		];
+
+		$diContainer = new Dice\Dice;
+		$testee = new App\GitAutomatedMirror(
+			$diContainer,
+			new Config\DiceConfigurator( $diContainer )
+		);
+		$GLOBALS[ 'debug' ] = FALSE;
+		$testee->init();
+		$testee->run( $argv );
+		$this->compareRepositoriesForTestRun();
+		$this->organizer->updateSourceRepo();
+
+		$GLOBALS[ 'debug' ] = TRUE;
+		$testee->run( $argv );
+		$this->compareRepositoriesForTestRun();
+		$this->checkMergedTags();
+	}
+
+	/**
+	 * the tags in the mirror repo
+	 * should all have a merge commit with the tmpBranch as last commit
+	 */
+	private function checkMergedTags() {
+
+		chdir( $this->repositories[ 'mirror' ][ 'path' ] );
+		$rawTags = `git tag`;
+		$tags = $this->gitParser->parseTags( $rawTags );
+		foreach ( $tags as $tag ) {
+			$tag = escapeshellarg( $tag );
+			$rawLog = `git log $tag -n 1 --oneline`;
+			$log = $this->gitParser->parseLogPrettyOneLine( $rawLog );
+
+			$this->assertEquals(
+				"Merge branch 'mergeBranch' into gamTempBranch",
+				current( $log ),
+				"Tag $tag failed to merge mergeBranch"
+			);
+		}
 	}
 
 	public function tearDown() {
