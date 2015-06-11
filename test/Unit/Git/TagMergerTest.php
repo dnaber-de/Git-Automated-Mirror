@@ -143,6 +143,16 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 			"Merge branch 'mergeBranch' into gamTempBranch",
 			current( $log )
 		);
+
+		// check that the temporary branch was deleted
+		chdir( $this->repositories[ 'process' ][ 'path' ] );
+		$rawBranches = `git branch -a`;
+		$branches = $this->gitStdOutParser->parseBranches( $rawBranches );
+
+		$this->assertFalse(
+			in_array( 'gamTempBranch', $branches ),
+			'Temp branch "gamTempBranch" still exists in process repository.'
+		);
 	}
 }
  
