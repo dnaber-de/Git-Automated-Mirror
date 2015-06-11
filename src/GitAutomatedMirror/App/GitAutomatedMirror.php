@@ -14,6 +14,11 @@ use Dice;
 class GitAutomatedMirror {
 
 	/**
+	 * @type string
+	 */
+	private $version;
+
+	/**
 	 * @type Dice\Dice
 	 */
 	private $diContainer;
@@ -61,6 +66,7 @@ class GitAutomatedMirror {
 
 		$this->diContainer = $diContainer;
 		$this->diceConfigurator = $diceConfigurator;
+		$this->version = '0.1-master';
 	}
 
 	/**
