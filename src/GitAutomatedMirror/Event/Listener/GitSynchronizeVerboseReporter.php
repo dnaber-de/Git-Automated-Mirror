@@ -57,6 +57,10 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 				$message = $this->getMergeBranchMergedMessage( $event, $eventParameter );
 				break;
 
+			case 'git.tagMerge.beforePushTag' :
+				$message = $this->getBeforePushTagMessage( $event, $eventParameter );
+				break;
+
 			default :
 				$message = $this->getUnknownEventMessage( $event );
 				break;
@@ -130,8 +134,8 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 		 * @type Type\GitBranch $mergeBranch
 		 */
 		$branch = $eventParameter[ 'branch' ];
-		$mergeBranch   = $eventParameter[ 'mergeBranch' ];
-		$message    = sprintf(
+		$mergeBranch = $eventParameter[ 'mergeBranch' ];
+		$message = sprintf(
 			"Merged '%s' into '%s'",
 			$mergeBranch,
 			$branch
@@ -139,6 +143,29 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 
 		return $message;
 	}
+
+	/**
+	 * @param Event\EventInterface $event
+	 * @param array                $eventParameter
+	 * @return string
+	 */
+	public function getBeforePushTagMessage( Event\EventInterface $event, Array $eventParameter ) {
+
+		/**
+		 * @type Type\GitTag $tag
+		 * @type Type\GitRemote $remote
+		 */
+		$tag = $eventParameter[ 'tag' ];
+		$remote = $eventParameter[ 'remote' ];
+		$message = sprintf(
+			'Push tag %s to %s',
+			$tag,
+			$remote
+		);
+
+		return $message;
+	}
+
 	/**
 	 * Check weather the listener is the given parameter.
 	 *

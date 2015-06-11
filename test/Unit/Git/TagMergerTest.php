@@ -128,7 +128,8 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 					'gitClient'   => $phpGit,
 					'tag'         => $tag,
 					'mergeBranch' => $mergeBranch,
-					'remote'      => $toRemote
+					'remote'      => $toRemote,
+					'tmpBranch'   => 'gamTempBranch'
 				]
 			);
 		$testee->mergeBranch( $mergeBranch, $tag, $toRemote );

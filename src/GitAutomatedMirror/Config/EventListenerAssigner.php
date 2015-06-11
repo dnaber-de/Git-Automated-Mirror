@@ -60,14 +60,14 @@ class EventListenerAssigner {
 		 * @type Event\Emitter $emitter
 		 */
 		$emitter = $this->diContainer->create( 'League\Event\Emitter' );
+		$listener = $this->diContainer
+			->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' );
 		$listenerProvider = new ListenerProvider\ListenerMapProvider(
 			[
-				'git.synchronize.done' => $this->diContainer
-						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
-				'git.synchronize.beforePushBranch' => $this->diContainer
-						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' ),
-				'git.event.mergedMergeBranch' => $this->diContainer
-						->create( 'GitAutomatedMirror\Event\Listener\GitSynchronizeVerboseReporter' )
+				'git.synchronize.done' => $listener,
+				'git.synchronize.beforePushBranch' => $listener,
+				'git.event.mergedMergeBranch' => $listener,
+				'git.tagMerge.beforePushTag' => $listener
 			]
 		);
 		$emitter->useListenerProvider( $listenerProvider );
