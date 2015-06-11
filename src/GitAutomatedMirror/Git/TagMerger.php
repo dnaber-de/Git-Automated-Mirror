@@ -3,6 +3,7 @@
 namespace GitAutomatedMirror\Git;
 use GitAutomatedMirror\Type;
 use PHPGit;
+use League\Event;
 
 /**
  * Class TagMerger
@@ -24,13 +25,24 @@ class TagMerger {
 	private $gitClient;
 
 	/**
-	 * @param TagReader  $tagReader
-	 * @param PHPGit\Git $gitClient
+	 * @type Event\Emitter
 	 */
-	public function __construct( TagReader $tagReader, PHPGit\Git $gitClient ) {
+	private $eventEmitter;
 
-		$this->tagReader = $tagReader;
-		$this->gitClient = $gitClient;
+	/**
+	 * @param TagReader     $tagReader
+	 * @param PHPGit\Git    $gitClient
+	 * @param Event\Emitter $eventEmitter
+	 */
+	public function __construct(
+		TagReader $tagReader,
+		PHPGit\Git $gitClient,
+		Event\Emitter $eventEmitter
+	) {
+
+		$this->tagReader    = $tagReader;
+		$this->gitClient    = $gitClient;
+		$this->eventEmitter = $eventEmitter;
 	}
 
 	/**
@@ -85,6 +97,16 @@ class TagMerger {
 		$this->gitClient->merge( $mergeBranch );
 		// update the tag …
 		$this->gitClient->tag->create( $tag, NULL, [ 'force' => TRUE ] );
+		$this->eventEmitter->emit(
+			'git.tagMerge.beforePushTag',
+			[
+				'gitClient'   => $this->gitClient,
+				'tag'         => $tag,
+				'mergeBranch' => $mergeBranch,
+				'remote'      => $toRemote,
+				'tmpBranch'   => $tmpBranch
+			]
+		);
 		$this->gitClient->push( $toRemote, $tag, [ 'force' => TRUE ] );
 
 		// checkout another ref before deleting the temp branch

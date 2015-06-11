@@ -61,9 +61,10 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 			$this->repositories[ 'source' ]
 		);
 
-		$phpGitMock = $this->mockBuilder->getPhpGitMock();
-		$tagReaderMock = $this->mockBuilder->getTagReaderMock();
-		$testee = new Git\TagMerger( $tagReaderMock, $phpGitMock );
+		$phpGitMock       = $this->mockBuilder->getPhpGitMock();
+		$tagReaderMock    = $this->mockBuilder->getTagReaderMock();
+		$eventEmitterMock = $this->mockBuilder->getEventEmitterMock();
+		$testee = new Git\TagMerger( $tagReaderMock, $phpGitMock, $eventEmitterMock );
 
 		// fetch the tags in the working repo from the source remote
 		$repository = new Type\GitRepository( $this->repositories[ 'process' ][ 'path' ] );
@@ -107,7 +108,8 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 		// setup the testee and dependencies
 		$phpGit = new PHPGit\Git;
 		$tagReaderMock = $this->mockBuilder->getTagReaderMock();
-		$testee = new Git\TagMerger( $tagReaderMock, $phpGit );
+		$eventEmitterMock = $this->mockBuilder->getEventEmitterMock( [ 'emit' ] );
+		$testee = new Git\TagMerger( $tagReaderMock, $phpGit, $eventEmitterMock );
 
 		$toRemote = new Type\GitRemote(
 			$this->repositories[ 'mirror' ][ 'name' ],
@@ -118,6 +120,17 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 			TRUE
 		);
 		$tag = new Type\GitTag( 'v1.0.1' );
+		$eventEmitterMock->expects( $this->exactly( 1 ) )
+			->method( 'emit' )
+			->with(
+				'git.tagMerge.beforePushTag',
+				[
+					'gitClient'   => $phpGit,
+					'tag'         => $tag,
+					'mergeBranch' => $mergeBranch,
+					'remote'      => $toRemote
+				]
+			);
 		$testee->mergeBranch( $mergeBranch, $tag, $toRemote );
 
 		// now check the state of the mirror repository
