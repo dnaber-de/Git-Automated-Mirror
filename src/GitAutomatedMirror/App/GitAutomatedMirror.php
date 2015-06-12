@@ -118,8 +118,11 @@ class GitAutomatedMirror {
 
 		// closing the application if the help argument is passed or there are no arguments at all
 		if ( $optionResults->has( 'help' ) || ! $argValidator->isValidRequest() ) {
-			$printer = new GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
-			echo $printer->render( $this->argumentsSpecification );
+			$stdPrinter = new Printer\StdOutPrinter;
+			$stdPrinter->printLine( "Git automated mirror Version {$this->version}" );
+			$optionPrinter = new GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
+			echo $optionPrinter->render( $this->argumentsSpecification );
+
 			return;
 		}
 
@@ -131,8 +134,8 @@ class GitAutomatedMirror {
 
 		// invalid merge-branch argument
 		if ( $argValidator->mergeBranchProvided() && ! $argValidator->mergeBranchExists() ) {
-			$printer = new Printer\StdOutPrinter;
-			$printer->printLine( "Error: Merge branch does not exist!" );
+			$optionPrinter = new Printer\StdOutPrinter;
+			$optionPrinter->printLine( "Error: Merge branch does not exist!" );
 			return;
 		}
 

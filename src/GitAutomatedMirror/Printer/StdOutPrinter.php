@@ -14,12 +14,18 @@ class StdOutPrinter implements PrinterInterface {
 
 	/**
 	 * @param $string
-	 *
-	 * @return void
 	 */
 	public function printLine( $string ) {
 
 		$string = str_replace( [ "\r", "\n" ], [ '\r', '\n' ], $string );
 		fwrite( \STDOUT, $string . PHP_EOL );
+	}
+
+	/**
+	 * @param $string
+	 */
+	public function printRaw( $string ) {
+
+		fwrite( \STDOUT, $string );
 	}
 }
