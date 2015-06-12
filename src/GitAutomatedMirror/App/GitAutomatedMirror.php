@@ -125,6 +125,9 @@ class GitAutomatedMirror {
 
 		// tell the git client about the directory
 		$this->git->setRepository( $appArguments->getRepository() );
+		// checkout the master branch (the repo might be in a 'not on any branch' state
+		// which leads to errors in the Git client somehow
+		$this->git->checkout( 'master' );
 
 		// invalid merge-branch argument
 		if ( $argValidator->mergeBranchProvided() && ! $argValidator->mergeBranchExists() ) {
@@ -178,6 +181,7 @@ class GitAutomatedMirror {
 
 		$branchesSynchronizer->synchronizeBranches( $sourceRemote, $mirrorRemote );
 
+		/** @type Git\TagMerger $tagMerger */
 		$tagMerger = $this->diContainer->create( 'GitAutomatedMirror\Git\TagMerger' );
 		$tagMerger->fetchTags( $appArguments->getRepository(), $appArguments->getRemoteSource() );
 		if ( $argValidator->mergeBranchProvided() ) {
