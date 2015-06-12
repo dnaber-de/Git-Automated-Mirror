@@ -66,6 +66,7 @@ class TagMerger {
 		Type\GitRemote $toRemote
 	) {
 
+		// @Todo: Take care of the current branch of the repo and set it back after we're done
 		foreach ( $this->tagReader->getTags() as $tag ) {
 			$this->mergeBranch( $mergeBranch, $tag, $toRemote );
 		}
