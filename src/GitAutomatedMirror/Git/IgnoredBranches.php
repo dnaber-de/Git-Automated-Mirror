@@ -49,6 +49,7 @@ class IgnoredBranches {
 
 		$ignoredBranchNames = [
 			'HEAD',
+			'gamTempBranch' // used by Git\TagMerger Todo: resolve this static dependency
 		];
 
 		return in_array( $branch->getName(), $ignoredBranchNames );
