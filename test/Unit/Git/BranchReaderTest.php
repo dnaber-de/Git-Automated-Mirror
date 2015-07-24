@@ -41,8 +41,7 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 			->willReturn( $branches );
 
 		$testee = new Git\BranchReader( $gitMock );
-		$testee->buildBranches();
-		$branches = $testee->getBranches();
+		$branches = $testee->buildBranches();
 
 		// test the names of the branch
 		$expectedNames = array_keys( $expectedBranchSignatures );
@@ -88,6 +87,9 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 
 		$mockBuilder = new Asset\MockBuilder( $this );
 		$gitMock = $mockBuilder->getPhpGitMock( [ 'branch' ] );
+		$gitMock->expects( $this->any() )
+			->method( 'branch' )
+			->willReturn( [] );
 		$testee = new Git\BranchReader( $gitMock );
 
 		$branch = $testee->parseRawBranch( $branch );
@@ -107,6 +109,40 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 			$branch->getRemotes(),
 			'Comparing branch remotes.'
 		);
+	}
+
+	/**
+	 * @dataProvider getCurrentBranchProvider
+	 * @param array $branches
+	 * @param array $expected
+	 */
+	public function testGetCurrentBranch( Array $branches, Array $expected ) {
+
+		$mockBuilder = new Asset\MockBuilder( $this );
+		$gitMock = $mockBuilder->getPhpGitMock( [ 'branch' ] );
+		$gitMock->expects( $this->any() )
+			->method( 'branch' )
+			->willReturn( $branches );
+
+		$testee = new Git\BranchReader( $gitMock );
+		$currentBranch = $testee->getCurrentBranch();
+
+		if ( ! empty( $expected ) ) {
+			$this->assertInstanceOf(
+				'GitAutomatedMirror\Type\GitBranch',
+				$currentBranch
+			);
+			$this->assertEquals(
+				$expected[ 'name' ],
+				$currentBranch->getName()
+			);
+			$this->assertEquals(
+				$expected[ 'remotes' ],
+				$currentBranch->getRemotes()
+			);
+		} else {
+			$this->assertNull( $currentBranch );
+		}
 	}
 
 	/**
@@ -315,6 +351,90 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 				'remotes' => [
 					'origin' => 'remotes/origin/master'
 				]
+			]
+		];
+
+		return $data;
+	}
+
+	/**
+	 * @see testGetCurrentBranch
+	 * @return array
+	 */
+	public function getCurrentBranchProvider() {
+
+		$data = [];
+
+		#0:
+		$data[] = [
+			#1.parameter $branches
+			[
+				'master' => [
+					'current' => TRUE,
+					'name'    => 'master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'remotes/origin/master' => [
+					'current' => FALSE,
+					'name'    => 'remotes/origin/master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'patch' => [
+					'current' => FALSE,
+					'name'    => 'patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				],
+				'remotes/mirror/patch' => [
+					'current' => FALSE,
+					'name'    => 'remotes/mirror/patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				]
+			],
+			#2. parameter $expectedBranchSignature
+			[
+				'name' => 'master',
+				'remotes' => [
+					'origin' => 'remotes/origin/master'
+				]
+			]
+		];
+
+		#1:
+		$data[] = [
+			#1.parameter $branches
+			[
+				'master' => [
+					'current' => FALSE,
+					'name'    => 'master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'remotes/origin/master' => [
+					'current' => FALSE,
+					'name'    => 'remotes/origin/master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'patch' => [
+					'current' => FALSE,
+					'name'    => 'patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				],
+				'remotes/mirror/patch' => [
+					'current' => FALSE,
+					'name'    => 'remotes/mirror/patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				]
+			],
+			#2. parameter $expectedBranchSignature
+			[
+				// currently not on any branch
 			]
 		];
 

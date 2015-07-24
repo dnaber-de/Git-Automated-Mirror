@@ -170,7 +170,6 @@ class GitAutomatedMirror {
 		 * @type Git\BranchReader $branchReader
 		 */
 		$branchReader = $this->diContainer->create( 'GitAutomatedMirror\Git\BranchReader' );
-		$branchReader->buildBranches();
 		$ignoredBranches = new Git\IgnoredBranches( $branchReader );
 		$branchesSynchronizer = new Git\BranchsSynchronizer( $this->git, $branchReader, $this->eventEmitter );
 		foreach ( $ignoredBranches->getIgnoredBranches() as $branch )

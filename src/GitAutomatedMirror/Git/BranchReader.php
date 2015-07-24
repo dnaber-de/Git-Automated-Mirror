@@ -22,6 +22,7 @@ class BranchReader {
 	public function __construct( PHPGit\Git $git ) {
 
 		$this->git = $git;
+		$this->updateBranches();
 	}
 
 	/**
@@ -35,6 +36,8 @@ class BranchReader {
 	/**
 	 * reads the current git branches and adds
 	 * them to the branch list
+	 *
+	 * @return array
 	 */
 	public function buildBranches() {
 
@@ -43,7 +46,16 @@ class BranchReader {
 		foreach ( $rawBranches as $rawBranch )
 			$branches = $this->addRawBranch( $rawBranch, $branches );
 
-		$this->branches = $branches;
+		return $branches;
+	}
+
+	/**
+	 * update the internal cache of builded branches
+	 *
+	 */
+	public function updateBranches() {
+
+		$this->branches = $this->buildBranches();
 	}
 
 	/**
@@ -112,5 +124,24 @@ class BranchReader {
 			$gitBranch->pushRemote( $branchInfo[ 'remote' ], $rawBranch[ 'name' ] );
 
 		return $gitBranch;
+	}
+
+	/**
+	 * @return Type\GitBranch|NULL
+	 */
+	public function getCurrentBranch() {
+
+		$rawBranches = $this->git->branch( [ 'all' => TRUE ] );
+		$branches = [];
+		$currentBranch = NULL;
+		foreach ( $rawBranches as $rawBranch ) {
+			$branchInfo = $this->parseBranchName( $rawBranch[ 'name' ] );
+			$branchName = $branchInfo[ 'name' ];
+			$branches = $this->addRawBranch( $rawBranch, $branches );
+			if ( $rawBranch[ 'current' ] )
+				$currentBranch = $branches[ $branchName ];
+		}
+
+		return $currentBranch;
 	}
 }
