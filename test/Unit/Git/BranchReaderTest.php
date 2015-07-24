@@ -80,6 +80,36 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @dataProvider parseRawBranchProvider
+	 * @param array $branch
+	 * @param array $expected
+	 */
+	public function testParseRawBranch( Array $branch, Array $expected ) {
+
+		$mockBuilder = new Asset\MockBuilder( $this );
+		$gitMock = $mockBuilder->getPhpGitMock( [ 'branch' ] );
+		$testee = new Git\BranchReader( $gitMock );
+
+		$branch = $testee->parseRawBranch( $branch );
+
+		$this->assertEquals(
+			$expected[ 'name' ],
+			$branch->getName(),
+			'Comparing branch name.'
+		);
+		$this->assertEquals(
+			$expected[ 'isLocal' ],
+			$branch->isLocal(),
+			'Comparing branch is-local.'
+		);
+		$this->assertEquals(
+			$expected[ 'remotes' ],
+			$branch->getRemotes(),
+			'Comparing branch remotes.'
+		);
+	}
+
+	/**
 	 * @return array
 	 */
 	public function branchProvider () {
@@ -237,6 +267,53 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 						'origin' => 'remotes/origin/master',
 						'mirror' => 'remotes/mirror/master'
 					]
+				]
+			]
+		];
+
+		return $data;
+	}
+
+	/**
+	 * @see testParseRawBranch
+	 * @return array
+	 */
+	public function parseRawBranchProvider() {
+
+		$data = [];
+
+		#0:
+		$data[] = [
+			#1. Parameter $branch
+			[
+				'current' => FALSE,
+				'name'    => 'master',
+				'hash'    => '2485d2f',
+				'title'   => 'some commit message'
+			],
+			#2. Parameter $expected
+			[
+				'name' => 'master',
+				'isLocal' => TRUE,
+				'remotes' => []
+			]
+		];
+
+		#1:
+		$data[] = [
+			#1. Parameter $branch
+			[
+				'current' => FALSE,
+				'name'    => 'remotes/origin/master',
+				'hash'    => '2485d2f',
+				'title'   => 'some commit message'
+			],
+			#2. Parameter $expected
+			[
+				'name' => 'master',
+				'isLocal' => FALSE,
+				'remotes' => [
+					'origin' => 'remotes/origin/master'
 				]
 			]
 		];

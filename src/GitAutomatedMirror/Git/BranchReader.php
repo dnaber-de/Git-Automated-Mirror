@@ -44,6 +44,10 @@ class BranchReader {
 	}
 
 	/**
+	 * Add another branch to the list of branches or »merge« two branch objects
+	 * the objects. That means a branch 'remotes/origin/master' will become a
+	 * remote option of an existing 'master' branch.
+	 *
 	 * @see PHPGit\Command\BranchCommand::__invoke()
 	 * @param array $rawBranch
 	 */
@@ -84,5 +88,22 @@ class BranchReader {
 			$parts[ 'name' ] = $chunks[ 2 ];
 
 		return $parts;
+	}
+
+	/**
+	 * @param array $rawBranch
+	 * @return Type\GitBranch
+	 */
+	public function parseRawBranch( Array $rawBranch ) {
+
+		$branchInfo = $this->parseBranchName( $rawBranch[ 'name' ] );
+		$gitBranch = new Type\GitBranch( $branchInfo[ 'name' ] );
+
+		if ( empty( $branchInfo[ 'remote' ] ) )
+			$gitBranch->setIsLocal( TRUE );
+		else
+			$gitBranch->pushRemote( $branchInfo[ 'remote' ], $rawBranch[ 'name' ] );
+
+		return $gitBranch;
 	}
 }
