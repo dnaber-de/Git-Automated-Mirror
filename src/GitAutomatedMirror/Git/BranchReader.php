@@ -39,8 +39,11 @@ class BranchReader {
 	public function buildBranches() {
 
 		$rawBranches = $this->git->branch( [ 'all' => TRUE ] );
+		$branches = [];
 		foreach ( $rawBranches as $rawBranch )
-			$this->addRawBranch( $rawBranch );
+			$branches = $this->addRawBranch( $rawBranch, $branches );
+
+		$this->branches = $branches;
 	}
 
 	/**
@@ -50,18 +53,22 @@ class BranchReader {
 	 *
 	 * @see PHPGit\Command\BranchCommand::__invoke()
 	 * @param array $rawBranch
+	 * @param array $branches
+	 * @return array
 	 */
-	public function addRawBranch( Array $rawBranch ) {
+	public function addRawBranch( Array $rawBranch, Array $branches ) {
 
 		$branchInfo = $this->parseBranchName( $rawBranch[ 'name' ] );
 		$branchName = $branchInfo[ 'name' ];
-		if ( ! isset( $this->branches[ $branchName ] ) )
-			$this->branches[ $branchName ] = new Type\GitBranch( $branchName );
+		if ( ! isset( $branches[ $branchName ] ) )
+			$branches[ $branchName ] = new Type\GitBranch( $branchName );
 
 		if ( empty( $branchInfo[ 'remote' ] ) )
-			$this->branches[ $branchName ]->setIsLocal( TRUE );
+			$branches[ $branchName ]->setIsLocal( TRUE );
 		else
-			$this->branches[ $branchName ]->pushRemote( $branchInfo[ 'remote' ], $rawBranch[ 'name' ] );
+			$branches[ $branchName ]->pushRemote( $branchInfo[ 'remote' ], $rawBranch[ 'name' ] );
+
+		return $branches;
 	}
 
 	/**
