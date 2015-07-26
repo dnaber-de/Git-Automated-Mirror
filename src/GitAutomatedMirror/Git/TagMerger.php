@@ -30,6 +30,11 @@ class TagMerger {
 	private $eventEmitter;
 
 	/**
+	 * @type string
+	 */
+	private $tempBranch = '';
+
+	/**
 	 * @param TagReader     $tagReader
 	 * @param PHPGit\Git    $gitClient
 	 * @param Event\Emitter $eventEmitter
@@ -43,6 +48,8 @@ class TagMerger {
 		$this->tagReader    = $tagReader;
 		$this->gitClient    = $gitClient;
 		$this->eventEmitter = $eventEmitter;
+
+		$this->tempBranch = 'gamTempBranch';
 	}
 
 	/**
@@ -89,11 +96,10 @@ class TagMerger {
 	 */
 	public function mergeBranch( Type\GitBranch $mergeBranch, Type\GitTag $tag, Type\GitRemote $toRemote ) {
 
-		$tmpBranch = 'gamTempBranch';
 		// create a temporary branch
 		// start at the tag commit
-		$this->gitClient->checkout->create( $tmpBranch, $tag );
-		$this->gitClient->checkout( $tmpBranch );
+		$this->gitClient->checkout->create( $this->tempBranch, $tag );
+		$this->gitClient->checkout( $this->tempBranch );
 		// now merge the merge-branch …
 		$this->gitClient->merge( $mergeBranch );
 		// update the tag …
@@ -105,14 +111,14 @@ class TagMerger {
 				'tag'         => $tag,
 				'mergeBranch' => $mergeBranch,
 				'remote'      => $toRemote,
-				'tmpBranch'   => $tmpBranch
+				'tmpBranch'   => $this->tempBranch
 			]
 		);
 		$this->gitClient->push( $toRemote, $tag, [ 'force' => TRUE ] );
 
 		// checkout another ref before deleting the temp branch
 		$this->gitClient->checkout( $tag );
-		$this->gitClient->branch->delete( $tmpBranch );
+		$this->gitClient->branch->delete( $this->tempBranch );
 	}
 
 	/**
