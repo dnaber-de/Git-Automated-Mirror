@@ -1,9 +1,10 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace GitAutomatedMirror\Git;
-use GitAutomatedMirror\Type;
-use PHPGit;
-use League\Event;
+use
+	GitAutomatedMirror\Type,
+	PHPGit,
+	League\Event;
 
 /**
  * Class TagMerger
@@ -30,6 +31,11 @@ class TagMerger {
 	private $eventEmitter;
 
 	/**
+	 * @type BranchReader
+	 */
+	private $branchReader;
+
+	/**
 	 * @type string
 	 */
 	private $tempBranch = '';
@@ -38,16 +44,19 @@ class TagMerger {
 	 * @param TagReader     $tagReader
 	 * @param PHPGit\Git    $gitClient
 	 * @param Event\Emitter $eventEmitter
+	 * @param BranchReader  $branchReader
 	 */
 	public function __construct(
 		TagReader $tagReader,
 		PHPGit\Git $gitClient,
-		Event\Emitter $eventEmitter
+		Event\Emitter $eventEmitter,
+		BranchReader $branchReader
 	) {
 
 		$this->tagReader    = $tagReader;
 		$this->gitClient    = $gitClient;
 		$this->eventEmitter = $eventEmitter;
+		$this->branchReader = $branchReader;
 
 		$this->tempBranch = 'gamTempBranch';
 	}
@@ -97,7 +106,8 @@ class TagMerger {
 	public function mergeBranch( Type\GitBranch $mergeBranch, Type\GitTag $tag, Type\GitRemote $toRemote ) {
 
 		// delete the temp branch if an earlier process was interrupted
-		$this->gitClient->branch->delete( $this->tempBranch );
+		if ( $this->branchReader->branchExists( $this->tempBranch ) )
+			$this->gitClient->branch->delete( $this->tempBranch );
 		// create a temporary branch
 		// start at the tag commit
 		$this->gitClient->checkout->create( $this->tempBranch, $tag );

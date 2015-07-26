@@ -148,6 +148,16 @@ class MockBuilder {
 		return $mock;
 	}
 
+	public function getBranchReaderMock( Array $methods = NULL ) {
+
+		$mock = $this->getMockWithoutConstructor(
+			'GitAutomatedMirror\Git\BranchReader',
+			$methods
+		);
+
+		return $mock;
+	}
+
 	/**
 	 * @param string $class
 	 * @param Array $methods
