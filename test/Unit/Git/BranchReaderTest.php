@@ -146,6 +146,33 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @dataProvider branchExistsProvider
+	 * @param array $branches
+	 * @param array $expected
+	 */
+	public function testBranchExists( Array $branches, Array $expected ) {
+
+		$mockBuilder = new Asset\MockBuilder( $this );
+		$gitMock = $mockBuilder->getPhpGitMock( [ 'branch' ] );
+		$gitMock->expects( $this->any() )
+			->method( 'branch' )
+			->with( [ 'all' => TRUE ] )
+			->willReturn( $branches );
+
+		$testee = new Git\BranchReader( $gitMock );
+
+		if ( $expected[ 'exists' ] ) {
+			$this->assertTrue(
+				$testee->branchExists( $expected[ 'test_branch' ] )
+			);
+		} else {
+			$this->assertFalse(
+				$testee->branchExists( $expected[ 'test_branch' ] )
+			);
+		}
+	}
+
+	/**
 	 * @return array
 	 */
 	public function branchProvider () {
@@ -435,6 +462,119 @@ class BranchReaderTest extends \PHPUnit_Framework_TestCase {
 			#2. parameter $expectedBranchSignature
 			[
 				// currently not on any branch
+			]
+		];
+
+		return $data;
+	}
+
+	/**
+	 * @see testBranchExists
+	 * @return array
+	 */
+	public function branchExistsProvider() {
+
+		$data = [];
+
+		#0:
+		$data[] = [
+			[
+				'master' => [
+					'current' => TRUE,
+					'name'    => 'master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'remotes/origin/master' => [
+					'current' => FALSE,
+					'name'    => 'remotes/origin/master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'patch' => [
+					'current' => FALSE,
+					'name'    => 'patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				],
+				'remotes/mirror/patch' => [
+					'current' => FALSE,
+					'name'    => 'remotes/mirror/patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				]
+			],
+			[
+				'test_branch' => 'master',
+				'exists' => TRUE
+			]
+		];
+
+		#1:
+		$data[] = [
+			[
+				'master' => [
+					'current' => TRUE,
+					'name'    => 'master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'remotes/origin/master' => [
+					'current' => FALSE,
+					'name'    => 'remotes/origin/master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'patch' => [
+					'current' => FALSE,
+					'name'    => 'patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				],
+				'remotes/mirror/patch' => [
+					'current' => FALSE,
+					'name'    => 'remotes/mirror/patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				]
+			],
+			[
+				'test_branch' => 'remotes/mirror/patch',
+				'exists' => TRUE
+			]
+		];
+
+		#2:
+		$data[] = [
+			[
+				'master' => [
+					'current' => TRUE,
+					'name'    => 'master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'remotes/origin/master' => [
+					'current' => FALSE,
+					'name'    => 'remotes/origin/master',
+					'hash'    => '2485d2f',
+					'title'   => 'some commit message'
+				],
+				'patch' => [
+					'current' => FALSE,
+					'name'    => 'patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				],
+				'remotes/mirror/patch' => [
+					'current' => FALSE,
+					'name'    => 'remotes/mirror/patch',
+					'hash'    => 'f84a8c3',
+					'title'   => 'some other message'
+				]
+			],
+			[
+				'test_branch' => 'missing_branch',
+				'exists' => FALSE
 			]
 		];
 

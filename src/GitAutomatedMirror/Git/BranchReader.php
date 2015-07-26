@@ -144,4 +144,19 @@ class BranchReader {
 
 		return $currentBranch;
 	}
+
+	/**
+	 * @param string $branchName
+	 * @return bool
+	 */
+	public function branchExists( $branchName ) {
+
+		$branches = $this->git->branch( [ 'all' => TRUE ] );
+		foreach ( $branches as $b ) {
+			if ( $branchName === $b[ 'name' ] )
+				return TRUE;
+		}
+
+		return FALSE;
+	}
 }
