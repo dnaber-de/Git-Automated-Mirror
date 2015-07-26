@@ -96,6 +96,8 @@ class TagMerger {
 	 */
 	public function mergeBranch( Type\GitBranch $mergeBranch, Type\GitTag $tag, Type\GitRemote $toRemote ) {
 
+		// delete the temp branch if an earlier process was interrupted
+		$this->gitClient->branch->delete( $this->tempBranch );
 		// create a temporary branch
 		// start at the tag commit
 		$this->gitClient->checkout->create( $this->tempBranch, $tag );
