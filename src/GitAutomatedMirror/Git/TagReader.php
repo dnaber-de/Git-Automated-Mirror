@@ -31,4 +31,40 @@ class TagReader {
 
 		return $tagObjects;
 	}
+
+	/**
+	 * @param Type\GitRepository $repository
+	 * @param Type\GitRemote $remote
+	 * @return array
+	 */
+	public function getRemoteTags( Type\GitRepository $repository, Type\GitRemote $remote) {
+
+		chdir( $repository->getDirectory() );
+		$repoName = escapeshellarg( $remote );
+		$result   = `git ls-remote --tags {$repoName}`;
+
+		return $this->parseRawRemoteTags( $result );
+	}
+
+	/**
+	 * @param string $rawTags
+	 * @return array
+	 */
+	public function parseRawRemoteTags( $rawTags ) {
+
+		$rawTags = explode( "\n", $rawTags );
+
+		$tags = array_map(
+			function( $rawTag ) {
+				$parts = preg_split( '~\s+~', $rawTag );
+				$tag = array_pop( $parts );
+				$tag = str_replace( 'refs/tags/', '', $tag );
+
+				return $tag;
+			},
+			$rawTags
+		);
+
+		return $tags;
+	}
 } 

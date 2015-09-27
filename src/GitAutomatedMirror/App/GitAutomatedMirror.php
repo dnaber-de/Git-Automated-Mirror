@@ -192,10 +192,25 @@ class GitAutomatedMirror {
 
 		/** @type Git\TagMerger $tagMerger */
 		$tagMerger = $this->diContainer->create( 'GitAutomatedMirror\Git\TagMerger' );
-		$tagMerger->fetchTags( $appArguments->getRepository(), $appArguments->getRemoteSource() );
+		/** @type Git\TagReader $tagReader */
+		$tagReader = $this->diContainer->create( 'GitAutomatedMirror\Git\TagReader' );
 		if ( $argValidator->mergeBranchProvided() ) {
+
+			$mirrorTags = $tagReader->getRemoteTags(
+				$appArguments->getRepository(),
+				$appArguments->getRemoteMirror()
+			);
+			// fetch tags from source repository
+			$tagMerger->fetchTags(
+				$appArguments->getRepository(),
+				$appArguments->getRemoteSource()
+			);
 			/** @type Git\TagMerger $tagMerger */
-			$tagMerger->mergeBranchIntoTags( $appArguments->getMergeBranch(), $appArguments->getRemoteMirror() );
+			$tagMerger->mergeBranchIntoTags(
+				$appArguments->getMergeBranch(),
+				$appArguments->getRemoteMirror(),
+				$mirrorTags
+			);
 		}
 		$tagMerger->pushTags( $appArguments->getRemoteMirror() );
 	}

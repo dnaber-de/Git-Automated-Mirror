@@ -76,14 +76,36 @@ class TagMerger {
 	/**
 	 * @param Type\GitBranch $mergeBranch
 	 * @param Type\GitRemote $toRemote
+	 * @param array $remoteTags List of Type\GitTag objects of the mirror repository
 	 */
 	public function mergeBranchIntoTags(
 		Type\GitBranch $mergeBranch,
-		Type\GitRemote $toRemote
+		Type\GitRemote $toRemote,
+		Array $remoteTags
 	) {
 
 		// @Todo: Take care of the current branch of the repo and set it back after we're done
 		foreach ( $this->tagReader->getTags() as $tag ) {
+			/* @var Type\GitTag $tag */
+			if ( in_array( $tag->getName(), $remoteTags ) ) {
+				/**
+				 * Assuming that tags never change in the original (source) repository
+				 * we can skip tags that already exists in the mirror directory.
+				 * @link https://github.com/dnaber-de/Git-Automated-Mirror/issues/5
+				 */
+				$this->eventEmitter->emit(
+					'git.tagMerge.skipExistingTag',
+					[
+						'gitClient'   => $this->gitClient,
+						'tag'         => $tag,
+						'mergeBranch' => $mergeBranch,
+						'remote'      => $toRemote,
+						'tmpBranch'   => $this->tempBranch
+					]
+				);
+				continue;
+			}
+
 			$this->mergeBranch( $mergeBranch, $tag, $toRemote );
 		}
 	}
@@ -113,7 +135,8 @@ class TagMerger {
 		$this->gitClient->checkout->create( $this->tempBranch, $tag );
 		$this->gitClient->checkout( $this->tempBranch );
 		// now merge the merge-branch …
-		$this->gitClient->merge( $mergeBranch );
+		$result = `git merge {$mergeBranch}`;
+		$this->gitClient->merge( $mergeBranch, NULL, [ 'no-ff' => TRUE ] );
 		// update the tag …
 		$this->gitClient->tag->create( $tag, NULL, [ 'force' => TRUE ] );
 		$this->eventEmitter->emit(
@@ -138,6 +161,6 @@ class TagMerger {
 	 */
 	public function pushTags( Type\GitRemote $toRemote ) {
 
-		$this->gitClient->push( $toRemote, NULL, [ 'tags' => TRUE ] );
+		$this->gitClient->push( $toRemote, NULL, [ 'tags' => TRUE, 'force' => TRUE ] );
 	}
 } 

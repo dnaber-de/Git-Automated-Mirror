@@ -67,7 +67,8 @@ class EventListenerAssigner {
 				'git.synchronize.done' => $listener,
 				'git.synchronize.beforePushBranch' => $listener,
 				'git.event.mergedMergeBranch' => $listener,
-				'git.tagMerge.beforePushTag' => $listener
+				'git.tagMerge.beforePushTag' => $listener,
+				'git.tagMerge.skipExistingTag' => $listener
 			]
 		);
 		$emitter->useListenerProvider( $listenerProvider );

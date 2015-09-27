@@ -61,6 +61,10 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 				$message = $this->getBeforePushTagMessage( $event, $eventParameter );
 				break;
 
+			case 'git.tagMerge.skipExistingTag' :
+				$message = $this->getSkippedTagMessage( $event, $eventParameter );
+				break;
+
 			default :
 				$message = $this->getUnknownEventMessage( $event );
 				break;
@@ -159,6 +163,28 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 		$remote = $eventParameter[ 'remote' ];
 		$message = sprintf(
 			'Push tag %s to %s',
+			$tag,
+			$remote
+		);
+
+		return $message;
+	}
+
+	/**
+	 * @param Event\EventInterface $event
+	 * @param array                $eventParameter
+	 * @return string
+	 */
+	public function getSkippedTagMessage( Event\EventInterface $event, Array $eventParameter ) {
+
+		/**
+		 * @type Type\GitTag $tag
+		 * @type Type\GitRemote $remote
+		 */
+		$tag = $eventParameter[ 'tag' ];
+		$remote = $eventParameter[ 'remote' ];
+		$message = sprintf(
+			'Skipped tag %s as it already exists in %s',
 			$tag,
 			$remote
 		);
