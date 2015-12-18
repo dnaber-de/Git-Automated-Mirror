@@ -43,8 +43,13 @@ class BranchReader {
 
 		$rawBranches = $this->git->branch( [ 'all' => TRUE ] );
 		$branches = [];
-		foreach ( $rawBranches as $rawBranch )
+		foreach ( $rawBranches as $rawBranch ) {
+			// the git api sometimes return a branch with NULL as name
+			// no idea why but we have to filter these
+			if ( ! $rawBranch[ 'name' ] )
+				continue;
 			$branches = $this->addRawBranch( $rawBranch, $branches );
+		}
 
 		return $branches;
 	}

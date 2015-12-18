@@ -27,7 +27,7 @@ class GitBranch implements BranchInterface, Common\StringConvertible {
 	 */
 	public function __construct( $name, $isLocal = FALSE, Array $remotes = NULL ) {
 
-		$this->name     = $name;
+		$this->name    = (string) $name;
 		$this->isLocal = (bool) $isLocal;
 		if ( $remotes )
 			$this->remotes = $remotes;
