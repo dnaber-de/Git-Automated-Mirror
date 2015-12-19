@@ -1,23 +1,24 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "301d03d017fc5aba9c037853d81a7b2a",
+    "hash": "6429b2ba2f067c46a59f883929fc1add",
+    "content-hash": "ed32ba48a648c726339b09311d22dc8a",
     "packages": [
         {
             "name": "corneltek/getoptionkit",
-            "version": "2.2.0",
+            "version": "2.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/c9s/GetOptionKit.git",
-                "reference": "5c9d87e2a427b441d880a7a3cb400916fcc3fecf"
+                "reference": "c7170525314b587019c0b2a7b0354432b64b48e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/c9s/GetOptionKit/zipball/5c9d87e2a427b441d880a7a3cb400916fcc3fecf",
-                "reference": "5c9d87e2a427b441d880a7a3cb400916fcc3fecf",
+                "url": "https://api.github.com/repos/c9s/GetOptionKit/zipball/c7170525314b587019c0b2a7b0354432b64b48e0",
+                "reference": "c7170525314b587019c0b2a7b0354432b64b48e0",
                 "shasum": ""
             },
             "require": {
@@ -46,7 +47,7 @@
             ],
             "description": "Powerful command-line option toolkit",
             "homepage": "http://github.com/c9s/GetOptionKit",
-            "time": "2015-06-04 05:55:50"
+            "time": "2015-10-02 07:53:43"
         },
         {
             "name": "dnaber/requisite",
@@ -93,25 +94,25 @@
         },
         {
             "name": "kzykhys/git",
-            "version": "v0.1.2",
+            "version": "dev-fork_master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/kzykhys/PHPGit.git",
-                "reference": "3c4db987494c38eac300593719a4a7832abddadd"
+                "url": "https://github.com/dnaber-de/PHPGit.git",
+                "reference": "a0e8f2e2caf1ab1f9ab0dffe7e64ea241f5d5e33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kzykhys/PHPGit/zipball/3c4db987494c38eac300593719a4a7832abddadd",
-                "reference": "3c4db987494c38eac300593719a4a7832abddadd",
+                "url": "https://api.github.com/repos/dnaber-de/PHPGit/zipball/a0e8f2e2caf1ab1f9ab0dffe7e64ea241f5d5e33",
+                "reference": "a0e8f2e2caf1ab1f9ab0dffe7e64ea241f5d5e33",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
-                "symfony/options-resolver": ">=2.3",
-                "symfony/process": ">=2.3"
+                "symfony/options-resolver": "~2.3",
+                "symfony/process": "~2.3"
             },
             "require-dev": {
-                "symfony/filesystem": ">=2.3"
+                "symfony/filesystem": "~2.3"
             },
             "type": "library",
             "extra": {
@@ -124,7 +125,6 @@
                     "": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -135,7 +135,10 @@
                 }
             ],
             "description": "A Git wrapper for PHP5.3+",
-            "time": "2014-02-15 06:18:00"
+            "support": {
+                "source": "https://github.com/dnaber-de/PHPGit/tree/fork_master"
+            },
+            "time": "2015-12-19 23:04:36"
         },
         {
             "name": "league/event",
@@ -189,34 +192,34 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v2.7.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/OptionsResolver.git",
-                "reference": "151155b1f1e817c4c763582260777f68ac55bdda"
+                "url": "https://github.com/symfony/options-resolver.git",
+                "reference": "e7f62cf7d9e48238299cfa5d0556aee8cff1e075"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/OptionsResolver/zipball/151155b1f1e817c4c763582260777f68ac55bdda",
-                "reference": "151155b1f1e817c4c763582260777f68ac55bdda",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/e7f62cf7d9e48238299cfa5d0556aee8cff1e075",
+                "reference": "e7f62cf7d9e48238299cfa5d0556aee8cff1e075",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
             },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
-            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\OptionsResolver\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -239,38 +242,38 @@
                 "configuration",
                 "options"
             ],
-            "time": "2015-05-13 11:34:46"
+            "time": "2015-11-18 13:45:00"
         },
         {
             "name": "symfony/process",
-            "version": "v2.7.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Process.git",
-                "reference": "e0a82b58e36afc60f8e79b8bc85a22bb064077c1"
+                "url": "https://github.com/symfony/process.git",
+                "reference": "1b988a88e3551102f3c2d9e1d47a18c3a78d6312"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/e0a82b58e36afc60f8e79b8bc85a22bb064077c1",
-                "reference": "e0a82b58e36afc60f8e79b8bc85a22bb064077c1",
+                "url": "https://api.github.com/repos/symfony/process/zipball/1b988a88e3551102f3c2d9e1d47a18c3a78d6312",
+                "reference": "1b988a88e3551102f3c2d9e1d47a18c3a78d6312",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
             },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
-            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\Process\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -288,7 +291,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2015-05-15 13:33:16"
+            "time": "2015-11-30 12:35:10"
         },
         {
             "name": "tombzombie/dice",
@@ -339,9 +342,11 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "kzykhys/git": 20,
         "tombzombie/dice": 20
     },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
 }

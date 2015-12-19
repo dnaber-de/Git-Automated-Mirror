@@ -2,8 +2,14 @@
   "require" : {
     "dnaber/requisite" : "~0.9",
     "corneltek/getoptionkit": "~2.2",
-    "kzykhys/git": "v0.1.2",
+    "kzykhys/git": "dev-fork_master",
     "tombzombie/dice": "dev-PHP5.4---PHP5.5",
     "league/event": "2.1.1"
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:dnaber-de/PHPGit.git"
+    }
+  ]
 }
