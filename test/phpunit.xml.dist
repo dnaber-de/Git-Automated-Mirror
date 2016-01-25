@@ -6,6 +6,15 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
+	<php>
+		<!--
+			You can specify an absolute path (like /tmp/gam) here (in
+			your local copy phpunit.xml of this file).
+			Default TMP_DIR is set internally to [sys_get_tmp_dir() . "/gam"] when leaving
+			this blank. Relative paths will NOT WORK here.
+		-->
+		<const name="GitAutomatedMirror\Test\TMP_DIR" value="" />
+	</php>
 	<testsuites>
 		<!-- the order of the test-suites is important! -->
 		<testsuite name="ComponentTests">

@@ -14,6 +14,11 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 	private $organizer;
 
 	/**
+	 * @type Asset\DirectoryNavigator
+	 */
+	private $directory_navigator;
+
+	/**
 	 * @type array
 	 */
 	private $repositories = [];
@@ -28,9 +33,12 @@ class GitAutomatedMirrorTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function setUp() {
 
-		$this->gitParser = new Asset\GitStdOutParser;
+		if ( ! $this->gitParser )
+			$this->gitParser = new Asset\GitStdOutParser;
+		if ( ! $this->directory_navigator )
+			$this->directory_navigator = new Asset\DirectoryNavigator;
 
-		$tmpDir = dirname( dirname( __DIR__ ) ) . '/tmp';
+		$tmpDir = $this->directory_navigator->getTmpDir();
 		$this->organizer = new Asset\RepositoryTestOrganizer( $tmpDir );
 		$this->organizer->cleanUp();
 		$this->repositories = $this->organizer->getRepositories();
