@@ -29,14 +29,25 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 	private $gitStdOutParser;
 
 	/**
+	 * @type Asset\DirectoryNavigator
+	 */
+	private $directory_navigator;
+
+	/**
 	 * runs before each test
 	 */
 	public function setUp() {
 
-		$this->mockBuilder = new Asset\MockBuilder( $this );
-		$this->gitStdOutParser = new Asset\GitStdOutParser;
+		if ( ! $this->mockBuilder )
+			$this->mockBuilder = new Asset\MockBuilder( $this );
 
-		$tmpDir = dirname( dirname( __DIR__ ) ) . '/tmp';
+		if ( ! $this->gitStdOutParser )
+			$this->gitStdOutParser = new Asset\GitStdOutParser;
+
+		if ( ! $this->directory_navigator )
+			$this->directory_navigator = new Asset\DirectoryNavigator;
+
+		$tmpDir = $this->directory_navigator->getTmpDir();
 		$this->organizer = new Asset\RepositoryTestOrganizer( $tmpDir );
 		$this->organizer->cleanUp();
 		$this->repositories = $this->organizer->getRepositories();
