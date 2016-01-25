@@ -211,8 +211,10 @@ class GitAutomatedMirror {
 				$appArguments->getRemoteMirror(),
 				$mirrorTags
 			);
+		} else {
+			// push tags as they are not meant to merged
+			$tagMerger->pushTags( $appArguments->getRemoteMirror() );
 		}
-		$tagMerger->pushTags( $appArguments->getRemoteMirror() );
 	}
 
 
