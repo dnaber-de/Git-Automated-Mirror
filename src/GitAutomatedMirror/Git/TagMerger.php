@@ -135,7 +135,6 @@ class TagMerger {
 		$this->gitClient->checkout->create( $this->tempBranch, $tag );
 		$this->gitClient->checkout( $this->tempBranch );
 		// now merge the merge-branch …
-		$result = `git merge {$mergeBranch}`;
 		$this->gitClient->merge( $mergeBranch, NULL, [ 'no-ff' => TRUE ] );
 		// update the tag …
 		$this->gitClient->tag->create( $tag, NULL, [ 'force' => TRUE ] );
