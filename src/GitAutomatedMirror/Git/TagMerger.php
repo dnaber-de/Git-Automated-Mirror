@@ -131,7 +131,7 @@ class TagMerger {
 		if ( $this->branchReader->branchExists( $this->tempBranch ) )
 			$this->gitClient->branch->delete( $this->tempBranch );
 		// create a temporary branch
-		// start at the tag commit
+		// starting at the tag commit
 		$this->gitClient->checkout->create( $this->tempBranch, $tag );
 		$this->gitClient->checkout( $this->tempBranch );
 		// now merge the merge-branch …
