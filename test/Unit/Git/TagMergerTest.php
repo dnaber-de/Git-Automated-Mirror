@@ -169,6 +169,11 @@ class TagMergerTest extends \PHPUnit_Framework_TestCase {
 			"Merge branch 'mergeBranch' into gamTempBranch",
 			current( $log )
 		);
+		$tags = $this->gitStdOutParser->parseTags( `git tag` );
+		$this->assertSame(
+			[ $tag->getName() ],
+			$tags
+		);
 
 		// check that the temporary branch was deleted
 		chdir( $this->repositories[ 'process' ][ 'path' ] );
