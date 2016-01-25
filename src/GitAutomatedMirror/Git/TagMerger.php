@@ -90,7 +90,7 @@ class TagMerger {
 			if ( in_array( $tag->getName(), $remoteTags ) ) {
 				/**
 				 * Assuming that tags never change in the original (source) repository
-				 * we can skip tags that already exists in the mirror directory.
+				 * we can skip tags that already exists in the mirror repository.
 				 * @link https://github.com/dnaber-de/Git-Automated-Mirror/issues/5
 				 */
 				$this->eventEmitter->emit(
