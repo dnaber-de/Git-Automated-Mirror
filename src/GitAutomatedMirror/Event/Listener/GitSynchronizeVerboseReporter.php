@@ -162,7 +162,7 @@ class GitSynchronizeVerboseReporter implements Event\ListenerInterface {
 		$tag = $eventParameter[ 'tag' ];
 		$remote = $eventParameter[ 'remote' ];
 		$message = sprintf(
-			'Push tag %s to %s',
+			'Push rebased tag %s to %s',
 			$tag,
 			$remote
 		);
